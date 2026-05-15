@@ -4,7 +4,7 @@ import math
 
 class Player:
     position: tuple[float, ...] = (0, 0)
-    speed: float = 0.3
+    speed: float = 0
     angle: float = 123
 
     def translate(self, x: float, y: float):
@@ -14,10 +14,10 @@ class Player:
         )
 
     def update(self):
-        # self.translate(
-        #     math.sin(self.angle * math.pi / 180) * self.speed,
-        #     -math.cos(self.angle * math.pi / 180) * self.speed,
-        # )
+        self.translate(
+            math.sin(self.angle * math.pi / 180) * self.speed,
+            -math.cos(self.angle * math.pi / 180) * self.speed,
+        )
 
         # Set camera position so the player is in the center of the screen
         terminal_size = camera.get_terminal_size()

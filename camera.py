@@ -52,6 +52,12 @@ class Camera:
 
         self.last_terminal_size = terminal_size
 
+    def hide_cursor(self):
+        print("\x1b[?25l")
+
+    def show_cursor(self):
+        print("\x1b[?25h")
+
     def draw_char(
         self, pos: tuple[int, ...], val: str, color: str = Colors.RESET, world_pos: bool = True
     ):

@@ -57,13 +57,14 @@ def loop():
 
     camera.flush()
 
-    # x += 1
-    x %= len(camera.buf) // 2
+    x += 1
+    x %= map_size[0] // 4
 
 
 if __name__ == "__main__":
     # Enable ANSI codes on PowerShell and CMD
     os.system("")
+    camera.hide_cursor()
 
     player = Player()
     x = 0
@@ -71,7 +72,7 @@ if __name__ == "__main__":
     keys: list[str] = []
 
     timer = time.time()
-    tick_time = 0.1
+    tick_time = 0.01
 
     try:
         while True:
@@ -86,3 +87,4 @@ if __name__ == "__main__":
 
     finally:
         restore_terminal()
+        camera.show_cursor()

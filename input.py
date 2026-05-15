@@ -44,12 +44,12 @@ def get_key():
             return "ESC"
         if ord(char) == 72:
             return "UP"
-        if ord(char) == 80:
-            return "DOWN"
-        if ord(char) == 77:
-            return "RIGHT"
         if ord(char) == 75:
             return "LEFT"
+        if ord(char) == 77:
+            return "RIGHT"
+        if ord(char) == 80:
+            return "DOWN"
     else:
         if ord(char) == 27:
             char = get_char()
@@ -65,5 +65,7 @@ def get_key():
                     return "RIGHT"
                 if char == "D":
                     return "LEFT"
+                return None
+            return None
 
     return char
