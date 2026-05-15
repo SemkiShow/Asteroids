@@ -11,6 +11,13 @@ def loop():
 
     camera.clear()
 
+    # Draw world border
+    terminal_size = camera.get_terminal_size()
+    camera.draw_rec(
+        (0, 0), terminal_size.columns, terminal_size.lines, Colors.BG_RED, world_pos=False
+    )
+    camera.draw_rec((-map_size[0] // 2, -map_size[1] // 2), map_size[0], map_size[1], Colors.RESET)
+
     camera.draw_char((x, x), "t", Colors.BLUE)
 
     pos_text = (
@@ -63,6 +70,7 @@ if __name__ == "__main__":
 
     player = Player()
     x = 0
+    map_size: tuple[int, ...] = (80, 40)
 
     try:
         while True:
