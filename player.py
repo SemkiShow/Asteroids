@@ -24,4 +24,8 @@ class Player:
         )
 
     def draw(self):
-        camera.draw_char(self.position, "X", Colors.RED)
+        draw_pos = (
+            math.floor(self.position[0]),
+            math.floor(self.position[1]),
+        )
+        camera.draw_char(draw_pos, "X", Colors.RED)

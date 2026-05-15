@@ -45,11 +45,11 @@ class Camera:
     ):
         # Calculate the offset positions
         if world_pos:
-            nx = math.floor(pos[0] - self.position[0])
-            ny = math.floor(pos[1] - self.position[1])
+            nx = round(pos[0] - self.position[0])
+            ny = round(pos[1] - self.position[1])
         else:
-            nx = math.floor(pos[0])
-            ny = math.floor(pos[1])
+            nx = round(pos[0])
+            ny = round(pos[1])
 
         # Ignore pixels that are out of screen
         if ny < 0 or ny >= len(self.buf) or nx < 0 or nx >= len(self.buf[ny]):
@@ -65,11 +65,11 @@ class Camera:
     ):
         # Calculate the offset positions
         if world_pos:
-            nx = math.floor(pos[0] - self.position[0])
-            ny = math.floor(pos[1] - self.position[1])
+            nx = round(pos[0] - self.position[0])
+            ny = round(pos[1] - self.position[1])
         else:
-            nx = math.floor(pos[0])
-            ny = math.floor(pos[1])
+            nx = round(pos[0])
+            ny = round(pos[1])
 
         for char in text:
             # Ignore pixels that are out of screen
