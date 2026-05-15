@@ -1,4 +1,6 @@
 import os
+from typing import List
+import math
 
 
 class Colors:
@@ -11,9 +13,9 @@ class Colors:
 
 
 class Camera:
-    position = (0, 0)
-    buf = []
-    last_terminal_size = (0, 0)
+    position: tuple[int] = (0, 0)
+    buf: List[List[int]] = []
+    last_terminal_size: tuple[int] = (0, 0)
 
     def __init__(self):
         self.clear()
@@ -35,10 +37,12 @@ class Camera:
             [" " for x in range(terminal_size.columns)] for y in range(terminal_size.lines - 1)
         ]
 
-    def draw_char(self, x: int, y: int, val: str, color: str = Colors.RESET):
+        self.last_terminal_size = terminal_size
+
+    def draw_char(self, pos: tuple(int), val: str, color: str = Colors.RESET):
         # Calculate the offset positions
-        nx = x + self.position[0]
-        ny = y + self.position[1]
+        nx = math.floor(pos[0] - self.position[0])
+        ny = math.floor(pos[1] - self.position[1])
         terminal_size = self.get_terminal_size()
 
         # Ignore pixels that are out of screen
