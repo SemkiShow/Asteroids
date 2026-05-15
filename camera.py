@@ -13,9 +13,9 @@ class Colors:
 
 
 class Camera:
-    position: tuple[int] = (0, 0)
-    buf: List[List[int]] = []
-    last_terminal_size: tuple[int] = (0, 0)
+    position: tuple[int, ...] = (0, 0)
+    buf: List[List[str]] = []
+    last_terminal_size: tuple[int, ...] = (0, 0)
 
     def __init__(self):
         self.last_terminal_size = self.get_terminal_size()
@@ -41,7 +41,7 @@ class Camera:
         self.last_terminal_size = terminal_size
 
     def draw_char(
-        self, pos: tuple(int), val: str, color: str = Colors.RESET, world_pos: bool = True
+        self, pos: tuple[int, ...], val: str, color: str = Colors.RESET, world_pos: bool = True
     ):
         # Calculate the offset positions
         if world_pos:
@@ -61,7 +61,7 @@ class Camera:
             self.buf[ny][nx] = val
 
     def draw_text(
-        self, pos: tuple(int), text: str, color: str = Colors.RESET, world_pos: bool = True
+        self, pos: tuple[int, ...], text: str, color: str = Colors.RESET, world_pos: bool = True
     ):
         # Calculate the offset positions
         if world_pos:

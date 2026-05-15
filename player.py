@@ -3,7 +3,7 @@ import math
 
 
 class Player:
-    position: tuple[float] = (0, 0)
+    position: tuple[float, ...] = (0, 0)
     speed: float = 0.3
     angle: float = 123
 

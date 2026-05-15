@@ -1,0 +1,69 @@
+import sys, os
+
+
+if os.name != "nt":
+    import tty, termios
+
+    fd = sys.stdin.fileno()
+    old_settings = termios.tcgetattr(fd)
+    tty.setcbreak(fd)
+
+
+def restore_terminal():
+    if os.name != "nt":
+        termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
+
+
+def get_char():
+    if os.name == "nt":
+        import msvcrt
+
+        if msvcrt.kbhit():
+            msvcrt.getch().decode("utf-8", errors="ignore")
+        return None
+    else:
+        import select
+
+        if select.select([fd], [], [], 0)[0]:
+            return os.read(fd, 1).decode("utf-8", errors="ignore")
+        return None
+
+
+def get_key():
+    char = get_char()
+
+    if char is None:
+        return char
+
+    if ord(char) in (10, 13):
+        return "ENTER"
+
+    if os.name == "nt":
+        if ord(char) == 27:
+            return "ESC"
+        char = get_char()
+        if ord(char) == 72:
+            return "UP"
+        if ord(char) == 80:
+            return "DOWN"
+        if ord(char) == 77:
+            return "RIGHT"
+        if ord(char) == 75:
+            return "LEFT"
+    else:
+        if ord(char) == 27:
+            char = get_char()
+            if char is None:
+                return "ESC"
+            if ord(char) == 91:
+                char = get_char()
+                if char == "A":
+                    return "UP"
+                if char == "B":
+                    return "DOWN"
+                if char == "C":
+                    return "RIGHT"
+                if char == "D":
+                    return "LEFT"
+
+    return char
