@@ -1,4 +1,4 @@
-from camera import *
+from camera import camera, Colors
 import math
 
 
@@ -7,14 +7,17 @@ class Player:
     speed: float = 0.3
     angle: float = 123
 
-    def __init__(self):
-        pass
+    def translate(self, x: float, y: float):
+        self.position = (
+            self.position[0] + x,
+            self.position[1] + y,
+        )
 
     def update(self):
-        self.position = (
-            self.position[0] + math.sin(self.angle * math.pi / 180) * self.speed,
-            self.position[1] - math.cos(self.angle * math.pi / 180) * self.speed,
-        )
+        # self.translate(
+        #     math.sin(self.angle * math.pi / 180) * self.speed,
+        #     -math.cos(self.angle * math.pi / 180) * self.speed,
+        # )
 
         # Set camera position so the player is in the center of the screen
         terminal_size = camera.get_terminal_size()

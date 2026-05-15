@@ -1,7 +1,7 @@
-from camera import *
+from camera import camera, Colors
 from player import Player
 from input import get_key, restore_terminal
-import time, os
+import time, os, math
 
 
 def loop():
@@ -12,7 +12,6 @@ def loop():
     camera.clear()
 
     camera.draw_char((x, x), "t", Colors.BLUE)
-    camera.draw_char((3, 3), "W", Colors.GREEN, world_pos=False)
 
     pos_text = (
         "Position: "
@@ -34,14 +33,25 @@ def loop():
         # Make Ctrl+C terminate the program
         if key == "\x03":
             raise KeyboardInterrupt
-        if key == "w" or key == "ESC" or key == "ENTER":
+
+        if key == "w" or key == "UP":
+            camera.draw_char((1, 1), "W", Colors.MAGENTA, world_pos=False)
+            player.translate(0, -1)
+        if key == "a" or key == "LEFT":
+            camera.draw_char((0, 2), "A", Colors.MAGENTA, world_pos=False)
+            player.translate(-1, 0)
+        if key == "s" or key == "DOWN":
+            camera.draw_char((1, 2), "S", Colors.MAGENTA, world_pos=False)
+            player.translate(0, 1)
+        if key == "d" or key == "RIGHT":
             camera.draw_char((2, 2), "D", Colors.MAGENTA, world_pos=False)
+            player.translate(1, 0)
 
         key = get_key()
 
     camera.flush()
 
-    x += 1
+    # x += 1
     x %= len(camera.buf) // 2
 
     time.sleep(0.1)

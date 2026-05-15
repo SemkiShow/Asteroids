@@ -1,6 +1,5 @@
 import os
 from typing import List
-import math
 
 
 class Colors:
