@@ -19,7 +19,8 @@ def get_char():
         import msvcrt
 
         if msvcrt.kbhit():
-            msvcrt.getch().decode("utf-8", errors="ignore")
+            char = msvcrt.getch().decode("utf-8", errors="ignore")
+            return char if char else None
         return None
     else:
         import select
@@ -41,7 +42,6 @@ def get_key():
     if os.name == "nt":
         if ord(char) == 27:
             return "ESC"
-        char = get_char()
         if ord(char) == 72:
             return "UP"
         if ord(char) == 80:

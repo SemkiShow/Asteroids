@@ -35,8 +35,7 @@ def loop():
 
     player.draw()
 
-    key = get_key()
-    while key:
+    for key in keys:
         # Make Ctrl+C terminate the program
         if key == "\x03":
             raise KeyboardInterrupt
@@ -54,14 +53,12 @@ def loop():
             camera.draw_char((2, 2), "D", Colors.MAGENTA, world_pos=False)
             player.translate(1, 0)
 
-        key = get_key()
+    keys.clear()
 
     camera.flush()
 
     # x += 1
     x %= len(camera.buf) // 2
-
-    time.sleep(0.1)
 
 
 if __name__ == "__main__":
@@ -71,10 +68,21 @@ if __name__ == "__main__":
     player = Player()
     x = 0
     map_size: tuple[int, ...] = (80, 40)
+    keys: list[str] = []
+
+    timer = time.time()
+    tick_time = 0.1
 
     try:
         while True:
-            loop()
+            key = get_key()
+            while key:
+                keys.append(key)
+                key = get_key()
+
+            if time.time() - timer >= tick_time:
+                loop()
+                timer = time.time()
 
     finally:
         restore_terminal()
