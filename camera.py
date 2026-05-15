@@ -18,6 +18,7 @@ class Camera:
     last_terminal_size: tuple[int] = (0, 0)
 
     def __init__(self):
+        self.last_terminal_size = self.get_terminal_size()
         self.clear()
 
     def get_terminal_size(self):
@@ -58,6 +59,30 @@ class Camera:
             self.buf[ny][nx] = color + val + Colors.RESET
         else:
             self.buf[ny][nx] = val
+
+    def draw_text(
+        self, pos: tuple(int), text: str, color: str = Colors.RESET, world_pos: bool = True
+    ):
+        # Calculate the offset positions
+        if world_pos:
+            nx = math.floor(pos[0] - self.position[0])
+            ny = math.floor(pos[1] - self.position[1])
+        else:
+            nx = math.floor(pos[0])
+            ny = math.floor(pos[1])
+
+        for char in text:
+            # Ignore pixels that are out of screen
+            if ny < 0 or ny >= len(self.buf) or nx < 0 or nx >= len(self.buf[ny]):
+                nx += 1
+                continue
+
+            if color != Colors.RESET:
+                self.buf[ny][nx] = color + char + Colors.RESET
+            else:
+                self.buf[ny][nx] = char
+
+            nx += 1
 
     def flush(self):
         for row in self.buf:

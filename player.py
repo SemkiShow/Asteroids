@@ -4,8 +4,8 @@ import math
 
 class Player:
     position: tuple[float] = (0, 0)
-    speed: float = 0.5
-    angle: float = -45
+    speed: float = 0.3
+    angle: float = 123
 
     def __init__(self):
         pass
