@@ -1,6 +1,15 @@
 import os
 
 
+class Colors:
+    RESET: str = "\x1b[0m"
+    RED: str = "\x1b[31m"
+    GREEN: str = "\x1b[32m"
+    YELLOW: str = "\x1b[33m"
+    BLUE: str = "\x1b[34m"
+    MAGENTA: str = "\x1b[35m"
+
+
 class Camera:
     position = (0, 0)
     buf = []
@@ -26,7 +35,7 @@ class Camera:
             [" " for x in range(terminal_size.columns)] for y in range(terminal_size.lines - 1)
         ]
 
-    def draw_char(self, x: int, y: int, val: str):
+    def draw_char(self, x: int, y: int, val: str, color: str = Colors.RESET):
         # Calculate the offset positions
         nx = x + self.position[0]
         ny = y + self.position[1]
@@ -36,7 +45,7 @@ class Camera:
         if ny < 0 or ny >= len(self.buf) or nx < 0 or nx >= len(self.buf[ny]):
             return
 
-        self.buf[ny][nx] = val
+        self.buf[ny][nx] = color + val + Colors.RESET
 
     def flush(self):
         for row in self.buf:

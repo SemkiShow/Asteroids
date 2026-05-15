@@ -1,4 +1,4 @@
-from camera import camera
+from camera import camera, Colors
 import time
 import os
 
@@ -9,7 +9,7 @@ if __name__ == "__main__":
     x = 0
     while True:
         camera.clear()
-        camera.draw_char(x, x, "\x1b[31mt\x1b[0m")
+        camera.draw_char(x, x, "t", Colors.BLUE)
         camera.flush()
 
         x += 1
