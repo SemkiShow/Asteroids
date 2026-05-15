@@ -39,17 +39,25 @@ class Camera:
 
         self.last_terminal_size = terminal_size
 
-    def draw_char(self, pos: tuple(int), val: str, color: str = Colors.RESET):
+    def draw_char(
+        self, pos: tuple(int), val: str, color: str = Colors.RESET, world_pos: bool = True
+    ):
         # Calculate the offset positions
-        nx = math.floor(pos[0] - self.position[0])
-        ny = math.floor(pos[1] - self.position[1])
-        terminal_size = self.get_terminal_size()
+        if world_pos:
+            nx = math.floor(pos[0] - self.position[0])
+            ny = math.floor(pos[1] - self.position[1])
+        else:
+            nx = math.floor(pos[0])
+            ny = math.floor(pos[1])
 
         # Ignore pixels that are out of screen
         if ny < 0 or ny >= len(self.buf) or nx < 0 or nx >= len(self.buf[ny]):
             return
 
-        self.buf[ny][nx] = color + val + Colors.RESET
+        if color != Colors.RESET:
+            self.buf[ny][nx] = color + val + Colors.RESET
+        else:
+            self.buf[ny][nx] = val
 
     def flush(self):
         for row in self.buf:

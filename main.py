@@ -14,6 +14,7 @@ if __name__ == "__main__":
 
         camera.clear()
         camera.draw_char((x, x), "t", Colors.BLUE)
+        camera.draw_char((10, 10), "W", Colors.GREEN, world_pos=False)
         player.draw()
         camera.flush()
 
