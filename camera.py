@@ -1,5 +1,4 @@
 import os
-from typing import List
 
 
 # https://gist.github.com/ConnerWill/d4b6c776b509add763e17f9f113fd25b
@@ -27,8 +26,9 @@ class Colors:
 
 class Camera:
     position: tuple[int, ...] = (0, 0)
-    buf: List[List[str]] = []
+    buf: list[list[str]] = []
     last_terminal_size: tuple[int, ...] = (0, 0)
+    character_ratio: float = 13 / 29
 
     def __init__(self):
         self.last_terminal_size = self.get_terminal_size()
@@ -59,7 +59,7 @@ class Camera:
         print("\x1b[?25h")
 
     def draw_char(
-        self, pos: tuple[int, ...], val: str, color: str = Colors.RESET, world_pos: bool = True
+        self, pos: tuple[float, ...], val: str, color: str = Colors.RESET, world_pos: bool = True
     ):
         # Calculate the offset positions
         if world_pos:
@@ -79,7 +79,7 @@ class Camera:
             self.buf[ny][nx] = val
 
     def draw_text(
-        self, pos: tuple[int, ...], text: str, color: str = Colors.RESET, world_pos: bool = True
+        self, pos: tuple[float, ...], text: str, color: str = Colors.RESET, world_pos: bool = True
     ):
         # Calculate the offset positions
         if world_pos:
@@ -104,7 +104,7 @@ class Camera:
 
     def draw_rec(
         self,
-        pos: tuple[int, ...],
+        pos: tuple[float, ...],
         width: int,
         height: int,
         color: str = Colors.BG_WHITE,

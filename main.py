@@ -1,3 +1,4 @@
+from re import M
 from camera import camera, Colors
 from player import Player
 from input import get_key, restore_terminal
@@ -16,9 +17,9 @@ def loop():
     camera.draw_rec(
         (0, 0), terminal_size.columns, terminal_size.lines, Colors.BG_RED, world_pos=False
     )
-    camera.draw_rec((-map_size[0] // 2, -map_size[1] // 2), map_size[0], map_size[1], Colors.RESET)
+    camera.draw_rec((-map_size[0] / 2, -map_size[1] / 2), map_size[0], map_size[1], Colors.RESET)
 
-    camera.draw_char((x, x), "t", Colors.BLUE)
+    camera.draw_char((x, x * camera.character_ratio), "t", Colors.BLUE)
 
     pos_text = (
         "Position: "
@@ -42,13 +43,13 @@ def loop():
 
         if key == "w" or key == "UP":
             camera.draw_char((1, 1), "W", Colors.MAGENTA, world_pos=False)
-            player.translate(0, -1)
+            player.translate(0, -camera.character_ratio)
         if key == "a" or key == "LEFT":
             camera.draw_char((0, 2), "A", Colors.MAGENTA, world_pos=False)
             player.translate(-1, 0)
         if key == "s" or key == "DOWN":
             camera.draw_char((1, 2), "S", Colors.MAGENTA, world_pos=False)
-            player.translate(0, 1)
+            player.translate(0, camera.character_ratio)
         if key == "d" or key == "RIGHT":
             camera.draw_char((2, 2), "D", Colors.MAGENTA, world_pos=False)
             player.translate(1, 0)
@@ -58,7 +59,7 @@ def loop():
     camera.flush()
 
     x += 1
-    x %= map_size[0] // 4
+    x %= map_size[0] // 2
 
 
 if __name__ == "__main__":
