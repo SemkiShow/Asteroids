@@ -1,17 +1,18 @@
-from player import Player
 from input import is_key_pressed
+from player import Player
 from utils import *
 from widgets import *
+import time
 
 
 class GameMenu(Window):
-    map_size: Vec2 = Vec2(80, 80 * camera.character_ratio)
-    player: Player = Player()
-    x: float = 0
-
     def __init__(self):
         super().__init__()
         self.visible = True
+
+        self.map_size: Vec2 = Vec2(80, 80 * camera.character_ratio)
+        self.player: Player = Player()
+        self.x: float = 0
 
         layout = VBoxLayout()
         layout.set_padding(0)
@@ -40,6 +41,10 @@ class GameMenu(Window):
             lambda: speed_label.set_text("Speed: " + str(round(self.player.speed, 1))),
         )
 
+        self.connect(
+            lambda: is_key_pressed("w"), lambda: notification_menu.show("Notification\nSecond line")
+        )
+
     def update(self):
         if is_key_pressed("a") or is_key_pressed("LEFT"):
             self.player.angle -= 45
@@ -64,8 +69,42 @@ class GameMenu(Window):
             Colors.RESET,
         )
 
-        camera.draw_char(Vec2(self.x, self.x * camera.character_ratio), "t", Colors.BLUE)
+        camera.draw_text(Vec2(self.x, self.x * camera.character_ratio), "t", Colors.BLUE)
 
         self.player.draw()
 
         return super().draw()
+
+
+class NotificationMenu(Window):
+    def __init__(self):
+        super().__init__()
+
+        self.open_time: float = 2
+        self.timer: float = time.time()
+
+        layout = VBoxLayout()
+        self.set_widget(layout)
+
+        self.message_label = Label("")
+        layout.add_widget(self.message_label)
+
+        def move_layout():
+            layout.bounds.x = camera.get_terminal_size().x - self.message_label.bounds.width
+
+        self.connect(lambda: True, move_layout)
+
+    def show(self, message: str, open_time: float = 2):
+        self.message_label.set_text(message)
+        self.open_time = open_time
+        self.timer = time.time()
+        self.visible = True
+
+    def update(self):
+        if time.time() - self.timer >= self.open_time:
+            self.visible = False
+        return super().update()
+
+
+game_menu = GameMenu()
+notification_menu = NotificationMenu()

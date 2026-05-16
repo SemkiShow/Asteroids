@@ -4,11 +4,12 @@ import math
 
 
 class Player:
-    position: Vec2 = Vec2(0, 0)
-    speed: float = 0
-    angle: float = 123
-    friction: float = 0.1
-    directions: str = "↑↗→↘↓↙←↖"
+    def __init__(self):
+        self.position: Vec2 = Vec2(0, 0)
+        self.speed: float = 0
+        self.angle: float = 90
+        self.friction: float = 0.3
+        self.directions: str = "↑↗→↘↓↙←↖"
 
     def translate(self, x: float, y: float):
         self.position.x += x
@@ -31,5 +32,5 @@ class Player:
     def draw(self):
         draw_pos = Vec2(math.floor(self.position.x), math.floor(self.position.y))
         angle = mod(self.angle, 360)
-        char = self.directions[math.floor(angle / 360 * len(self.directions))]
-        camera.draw_char(draw_pos, char, Colors.RED)
+        char = self.directions[round(angle / 360 * len(self.directions)) % len(self.directions)]
+        camera.draw_text(draw_pos, char, Colors.RED)

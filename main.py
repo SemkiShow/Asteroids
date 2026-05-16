@@ -1,6 +1,6 @@
 from camera import camera
-from menus import GameMenu
 from input import is_key_pressed, poll_events, reset_events, restore_terminal
+from menus import *
 from widgets import *
 import time, os
 
@@ -8,14 +8,15 @@ import time, os
 if __name__ == "__main__":
     # Enable ANSI codes on PowerShell and CMD
     os.system("")
-    camera.hide_cursor()
 
     timer = time.time()
 
     app: Application = Application()
-    app.add_window(GameMenu())
+    app.add_window(game_menu)
+    app.add_window(notification_menu)
 
     try:
+        camera.hide_cursor()
         while True:
             poll_events()
             # Make Ctrl+C terminate the program

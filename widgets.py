@@ -1,4 +1,4 @@
-# Based on my GUI library: [RayUI](https://github.com/SemkiShow/RayUI)
+# Inspired by my GUI library: [RayUI](https://github.com/SemkiShow/RayUI)
 
 from camera import camera, Colors
 from input import is_key_pressed
@@ -31,18 +31,27 @@ def _add_margin(bounds: Rec, margin: float):
     )
 
 
-class Widget:
-    # Negative axis value means that the widget can expand in that axis
-    bounds: Rec = Rec(0, 0, -1, -1)
-    min_size: Vec2 = Vec2(1, 1)
-    max_size: Vec2 = Vec2(-1, -1)
-    visible: bool = True
-    disabled: bool = False
-    highlighted: bool = False
-    color: str = Colors.RESET
+def _measure_text(text: str):
+    size = Vec2(0, 0)
+    for line in text.split("\n"):
+        size.x = max(size.x, len(line))
+    size.y = text.count("\n") + 1
+    return size
 
-    _update_bounds: bool = True
-    _is_clicked: bool = False
+
+class Widget:
+    def __init__(self):
+        # Negative axis value means that the widget can expand in that axis
+        self.bounds: Rec = Rec(0, 0, -1, -1)
+        self.min_size: Vec2 = Vec2(1, 1)
+        self.max_size: Vec2 = Vec2(-1, -1)
+        self.visible: bool = True
+        self.disabled: bool = False
+        self.highlighted: bool = False
+        self.color: str = Colors.RESET
+
+        self._update_bounds: bool = True
+        self._is_clicked: bool = False
 
     def update_bounds(self):
         self._update_bounds = True
@@ -70,7 +79,9 @@ class Widget:
 
 
 class Label(Widget):
-    _text: str
+    def __init__(self, text: str):
+        super().__init__()
+        self.set_text(text)
 
     def set_text(self, text: str):
         self._text = text
@@ -79,18 +90,21 @@ class Label(Widget):
     def get_text(self):
         return self._text
 
-    def __init__(self, text: str):
-        super().__init__()
-        self.set_text(text)
+    def update(self):
+        if self._update_bounds:
+            self.bounds.set_size(_measure_text(self._text))
+        return super().update()
 
     def draw(self):
         camera.draw_text(self.bounds.get_pos(), self._text, self.color, world_pos=False)
 
 
 class Layout(Widget):
-    _margin: float = 0
-    _padding: float = 1
-    _widgets: list[Widget] = []
+    def __init__(self):
+        super().__init__()
+        self._margin: float = 0
+        self._padding: float = 1
+        self._widgets: list[Widget] = []
 
     def set_margin(self, margin: float):
         self._margin = margin
@@ -260,8 +274,10 @@ class HBoxLayout(Layout):
 
 
 class Container(Widget):
-    _margin: float = 0
-    _widget: Widget | None = None
+    def __init__(self):
+        super().__init__()
+        self._margin: float = 0
+        self._widget: Widget | None = None
 
     def set_margin(self, margin: float):
         self._margin = margin
@@ -308,20 +324,16 @@ class Container(Widget):
 
 
 class Event:
-    event: Callable[[], bool]
-    func: Callable[[], None]
-
     def __init__(self, event: Callable[[], bool], func: Callable[[], None]):
         self.event = event
         self.func = func
 
 
 class Window(Container):
-    _events: list[Event] = []
-
     def __init__(self):
         super().__init__()
         self.visible = False
+        self._events: list[Event] = []
 
     def connect(self, event: Callable[[], bool], func: Callable[[], None]):
         self._events.append(Event(event, func))
@@ -335,8 +347,9 @@ class Window(Container):
 
 
 class Application:
-    _update_bounds: bool = True
-    _windows: list[Window] = []
+    def __init__(self):
+        self._update_bounds: bool = True
+        self._windows: list[Window] = []
 
     def update_bounds(self):
         self._update_bounds = False

@@ -1,16 +1,10 @@
 class Vec2:
-    x: float = 0
-    y: float = 0
-
     def __init__(self, x: float, y: float):
         self.x = x
         self.y = y
 
 
 class IntVec2:
-    x: int = 0
-    y: int = 0
-
     def __init__(self, x: float, y: float):
         self.x = round(x)
         self.y = round(y)
@@ -20,19 +14,22 @@ class IntVec2:
 
 
 class Rec:
-    x: float = 0
-    y: float = 0
-    width: int = 0
-    height: int = 0
-
     def __init__(self, x: float, y: float, width: float, height: float):
         self.x = x
         self.y = y
         self.width = round(width)
         self.height = round(height)
 
+    def set_pos(self, val: Vec2):
+        self.x = round(val.x)
+        self.y = round(val.y)
+
     def get_pos(self):
         return Vec2(self.x, self.y)
+
+    def set_size(self, val: Vec2):
+        self.width = round(val.x)
+        self.height = round(val.y)
 
     def get_size(self):
         return Vec2(self.width, self.height)

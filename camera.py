@@ -26,13 +26,12 @@ class Colors:
 
 
 class Camera:
-    position: IntVec2 = IntVec2(0, 0)
-    buf: list[list[str]] = []
-    character_ratio: float = 13 / 29
-    tick_time: float = 0.01
-
     def __init__(self):
-        self.last_terminal_size = self.get_terminal_size()
+        self.position: IntVec2 = IntVec2(0, 0)
+        self.buf: list[list[str]] = []
+        self.character_ratio: float = 13 / 29
+        self.tick_time: float = 0.01
+
         self.clear()
 
     def get_terminal_size(self):
@@ -53,24 +52,6 @@ class Camera:
     def get_delta_time(self):
         return self.tick_time
 
-    def draw_char(self, pos: Vec2, val: str, color: str = Colors.RESET, world_pos: bool = True):
-        # Calculate the offset positions
-        if world_pos:
-            nx = round(pos.x - self.position.x)
-            ny = round(pos.y - self.position.y)
-        else:
-            nx = round(pos.x)
-            ny = round(pos.y)
-
-        # Ignore pixels that are out of screen
-        if ny < 0 or ny >= len(self.buf) or nx < 0 or nx >= len(self.buf[ny]):
-            return
-
-        if color != Colors.RESET:
-            self.buf[ny][nx] = color + val + Colors.RESET
-        else:
-            self.buf[ny][nx] = val
-
     def draw_text(self, pos: Vec2, text: str, color: str = Colors.RESET, world_pos: bool = True):
         # Calculate the offset positions
         if world_pos:
@@ -80,7 +61,13 @@ class Camera:
             nx = round(pos.x)
             ny = round(pos.y)
 
+        start_x = nx
         for char in text:
+            if char == '\n':
+                nx = start_x
+                ny += 1
+                continue
+
             # Ignore pixels that are out of screen
             if ny < 0 or ny >= len(self.buf) or nx < 0 or nx >= len(self.buf[ny]):
                 nx += 1
