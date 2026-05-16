@@ -59,7 +59,11 @@ if __name__ == "__main__":
     app: Application = Application()
 
     window: Window = Window()
-    window.set_widget(Label("Test"))
+    layout = VBoxLayout()
+    window.set_widget(layout)
+    layout.add_widget(Label("a"))
+    layout.add_widget(Label("b"))
+    layout.add_widget(Label("c"))
     window.connect(lambda: is_key_pressed("w"), lambda: camera.draw_char(Vec2(1, 1), "D"))
 
     app.add_window(window)
