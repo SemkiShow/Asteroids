@@ -1,17 +1,16 @@
 from camera import camera, Colors
+from utils import *
 import math
 
 
 class Player:
-    position: tuple[float, ...] = (0, 0)
+    position = Vec2(0, 0)
     speed: float = 0
     angle: float = 123
 
     def translate(self, x: float, y: float):
-        self.position = (
-            self.position[0] + x,
-            self.position[1] + y,
-        )
+        self.position.x += x
+        self.position.y += y
 
     def update(self):
         self.translate(
@@ -21,14 +20,8 @@ class Player:
 
         # Set camera position so the player is in the center of the screen
         terminal_size = camera.get_terminal_size()
-        camera.position = (
-            math.floor(self.position[0]) - terminal_size[0] // 2,
-            math.floor(self.position[1]) - terminal_size[1] // 2,
-        )
+        camera.position.x = math.floor(self.position.x) - terminal_size.x // 2
+        camera.position.y = math.floor(self.position.y) - terminal_size.y // 2
 
     def draw(self):
-        draw_pos = (
-            math.floor(self.position[0]),
-            math.floor(self.position[1]),
-        )
-        camera.draw_char(draw_pos, "X", Colors.RED)
+        camera.draw_char(self.position, "X", Colors.RED)

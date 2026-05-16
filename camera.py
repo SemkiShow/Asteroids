@@ -1,3 +1,4 @@
+from utils import *
 import os
 
 
@@ -25,9 +26,9 @@ class Colors:
 
 
 class Camera:
-    position: tuple[int, ...] = (0, 0)
+    position = IntVec2(0, 0)
     buf: list[list[str]] = []
-    last_terminal_size: tuple[int, ...] = (0, 0)
+    last_terminal_size = IntVec2(0, 0)
     character_ratio: float = 13 / 29
 
     def __init__(self):
@@ -35,7 +36,8 @@ class Camera:
         self.clear()
 
     def get_terminal_size(self):
-        return os.get_terminal_size()
+        terminal_size = os.get_terminal_size()
+        return IntVec2(terminal_size.columns, terminal_size.lines)
 
     def clear(self):
         terminal_size = self.get_terminal_size()
@@ -43,12 +45,10 @@ class Camera:
         # Clear the terminal only if the size has changed
         # flush() returns cursor to home, so clear isn't necessary if the terminal size stays the same
         if self.last_terminal_size != terminal_size:
-            print("\033[H\033[J", end="")
+            print("\x1b[H\x1b[J", end="")
 
         # Reset the internal buffer
-        self.buf = [
-            [" " for x in range(terminal_size.columns)] for y in range(terminal_size.lines - 1)
-        ]
+        self.buf = [[" " for x in range(terminal_size.x)] for y in range(terminal_size.y)]
 
         self.last_terminal_size = terminal_size
 
@@ -58,16 +58,14 @@ class Camera:
     def show_cursor(self):
         print("\x1b[?25h")
 
-    def draw_char(
-        self, pos: tuple[float, ...], val: str, color: str = Colors.RESET, world_pos: bool = True
-    ):
+    def draw_char(self, pos: Vec2, val: str, color: str = Colors.RESET, world_pos: bool = True):
         # Calculate the offset positions
         if world_pos:
-            nx = round(pos[0] - self.position[0])
-            ny = round(pos[1] - self.position[1])
+            nx = round(pos.x - self.position.x)
+            ny = round(pos.y - self.position.y)
         else:
-            nx = round(pos[0])
-            ny = round(pos[1])
+            nx = round(pos.x)
+            ny = round(pos.y)
 
         # Ignore pixels that are out of screen
         if ny < 0 or ny >= len(self.buf) or nx < 0 or nx >= len(self.buf[ny]):
@@ -78,16 +76,14 @@ class Camera:
         else:
             self.buf[ny][nx] = val
 
-    def draw_text(
-        self, pos: tuple[float, ...], text: str, color: str = Colors.RESET, world_pos: bool = True
-    ):
+    def draw_text(self, pos: Vec2, text: str, color: str = Colors.RESET, world_pos: bool = True):
         # Calculate the offset positions
         if world_pos:
-            nx = round(pos[0] - self.position[0])
-            ny = round(pos[1] - self.position[1])
+            nx = round(pos.x - self.position.x)
+            ny = round(pos.y - self.position.y)
         else:
-            nx = round(pos[0])
-            ny = round(pos[1])
+            nx = round(pos.x)
+            ny = round(pos.y)
 
         for char in text:
             # Ignore pixels that are out of screen
@@ -104,22 +100,20 @@ class Camera:
 
     def draw_rec(
         self,
-        pos: tuple[float, ...],
-        width: int,
-        height: int,
+        rec: Rec,
         color: str = Colors.BG_WHITE,
         world_pos: bool = True,
     ):
         # Calculate the offset positions
         if world_pos:
-            nx = round(pos[0] - self.position[0])
-            ny = round(pos[1] - self.position[1])
+            nx = round(rec.x - self.position.x)
+            ny = round(rec.y - self.position.y)
         else:
-            nx = round(pos[0])
-            ny = round(pos[1])
+            nx = round(rec.x)
+            ny = round(rec.y)
 
-        for dy in range(height):
-            for dx in range(width):
+        for dy in range(rec.height):
+            for dx in range(rec.width):
                 x = nx + dx
                 y = ny + dy
 
@@ -133,7 +127,7 @@ class Camera:
                     self.buf[y][x] = " "
 
     def flush(self):
-        print("\x1b[H" + "\n".join("".join(row) for row in self.buf))
+        print("\x1b[H" + "\n".join("".join(row) for row in self.buf), end="")
 
 
 camera = Camera()
