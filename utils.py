@@ -30,3 +30,7 @@ class Rec:
         self.y = y
         self.width = round(width)
         self.height = round(height)
+
+
+def mod(a, b):
+    return ((a % b) + b) % b

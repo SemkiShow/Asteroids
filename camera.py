@@ -28,8 +28,8 @@ class Colors:
 class Camera:
     position = IntVec2(0, 0)
     buf: list[list[str]] = []
-    last_terminal_size = IntVec2(0, 0)
     character_ratio: float = 13 / 29
+    tick_time: float = 0.01
 
     def __init__(self):
         self.last_terminal_size = self.get_terminal_size()
@@ -40,23 +40,18 @@ class Camera:
         return IntVec2(terminal_size.columns, terminal_size.lines)
 
     def clear(self):
+        print("\x1b[H", end="")
         terminal_size = self.get_terminal_size()
-
-        # Clear the terminal only if the size has changed
-        # flush() returns cursor to home, so clear isn't necessary if the terminal size stays the same
-        if self.last_terminal_size != terminal_size:
-            print("\x1b[H\x1b[J", end="")
-
-        # Reset the internal buffer
         self.buf = [[" " for x in range(terminal_size.x)] for y in range(terminal_size.y)]
-
-        self.last_terminal_size = terminal_size
 
     def hide_cursor(self):
         print("\x1b[?25l")
 
     def show_cursor(self):
         print("\x1b[?25h")
+
+    def get_delta_time(self):
+        return self.tick_time
 
     def draw_char(self, pos: Vec2, val: str, color: str = Colors.RESET, world_pos: bool = True):
         # Calculate the offset positions
@@ -127,7 +122,7 @@ class Camera:
                     self.buf[y][x] = " "
 
     def flush(self):
-        print("\x1b[H" + "\n".join("".join(row) for row in self.buf), end="")
+        print("\n".join("".join(row) for row in self.buf), end="")
 
 
 camera = Camera()

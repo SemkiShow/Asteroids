@@ -36,18 +36,12 @@ def loop():
         if key == "\x03":
             raise KeyboardInterrupt
 
-        if key == "w" or key == "UP":
-            camera.draw_char(Vec2(1, 1), "W", Colors.MAGENTA, world_pos=False)
-            player.translate(0, -1)
         if key == "a" or key == "LEFT":
-            camera.draw_char(Vec2(0, 2), "A", Colors.MAGENTA, world_pos=False)
-            player.translate(-1, 0)
-        if key == "s" or key == "DOWN":
-            camera.draw_char(Vec2(1, 2), "S", Colors.MAGENTA, world_pos=False)
-            player.translate(0, 1)
+            player.angle -= 45
         if key == "d" or key == "RIGHT":
-            camera.draw_char(Vec2(2, 2), "D", Colors.MAGENTA, world_pos=False)
-            player.translate(1, 0)
+            player.angle += 45
+        if key == " ":
+            player.speed += 0.5
 
     keys.clear()
 
@@ -68,7 +62,6 @@ if __name__ == "__main__":
     keys: list[str] = []
 
     timer = time.time()
-    tick_time = 0.01
 
     try:
         while True:
@@ -77,7 +70,7 @@ if __name__ == "__main__":
                 keys.append(key)
                 key = get_key()
 
-            if time.time() - timer >= tick_time:
+            if time.time() - timer >= camera.tick_time:
                 loop()
                 timer = time.time()
 
