@@ -4,7 +4,7 @@ import math
 
 
 class Player:
-    position = Vec2(0, 0)
+    position: Vec2 = Vec2(0, 0)
     speed: float = 0
     angle: float = 123
     friction: float = 0.1
@@ -31,5 +31,5 @@ class Player:
     def draw(self):
         draw_pos = Vec2(math.floor(self.position.x), math.floor(self.position.y))
         angle = mod(self.angle, 360)
-        char = self.directions[int(angle / 360 * len(self.directions))]
+        char = self.directions[math.floor(angle / 360 * len(self.directions))]
         camera.draw_char(draw_pos, char, Colors.RED)

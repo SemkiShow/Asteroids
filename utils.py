@@ -31,6 +31,12 @@ class Rec:
         self.width = round(width)
         self.height = round(height)
 
+    def get_pos(self):
+        return Vec2(self.x, self.y)
+
+    def get_size(self):
+        return Vec2(self.width, self.height)
+
 
 def mod(a, b):
     return ((a % b) + b) % b

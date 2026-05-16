@@ -26,7 +26,7 @@ class Colors:
 
 
 class Camera:
-    position = IntVec2(0, 0)
+    position: IntVec2 = IntVec2(0, 0)
     buf: list[list[str]] = []
     character_ratio: float = 13 / 29
     tick_time: float = 0.01

@@ -69,3 +69,21 @@ def get_key():
             return None
 
     return char
+
+
+_keys: list[str] = []
+
+
+def poll_events():
+    key = get_key()
+    while key:
+        _keys.append(key)
+        key = get_key()
+
+
+def reset_events():
+    _keys.clear()
+
+
+def is_key_pressed(key: str):
+    return key in _keys
