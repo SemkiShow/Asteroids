@@ -80,6 +80,7 @@ class Label(Widget):
         return self._text
 
     def __init__(self, text: str):
+        super().__init__()
         self.set_text(text)
 
     def draw(self):
@@ -317,6 +318,10 @@ class Event:
 
 class Window(Container):
     _events: list[Event] = []
+
+    def __init__(self):
+        super().__init__()
+        self.visible = False
 
     def connect(self, event: Callable[[], bool], func: Callable[[], None]):
         self._events.append(Event(event, func))
