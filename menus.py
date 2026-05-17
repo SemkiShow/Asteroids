@@ -1,4 +1,3 @@
-from sys import platform
 from input import is_key_pressed
 from map import Map
 from player import Player
@@ -13,7 +12,8 @@ class GameMenu(Window):
 
         self.player: Player = Player()
         self.map: Map = Map()
-        self.map.load("resources/levels/1.ppm")
+
+        self.load_map("resources/levels/gimp.ppm")
 
         layout = VBoxLayout()
         layout.set_padding(0)
@@ -42,11 +42,22 @@ class GameMenu(Window):
             lambda: speed_label.set_text("Speed: " + str(round(self.player.speed, 1))),
         )
 
+    def load_map(self, file_name: str):
+        self.map.load(file_name)
+        self.player.pos = self.map.player_pos
+
     def game_over(self):
         self.player.speed = 0
         notification_menu.show("Game Over!")
+        # end_game_menu.visible = True
 
     def update(self):
+        super().update()
+
+        # Don't run game update if the game is over
+        if end_game_menu.visible:
+            return
+
         if is_key_pressed("a") or is_key_pressed("LEFT"):
             self.player.angle -= 45
         if is_key_pressed("d") or is_key_pressed("RIGHT"):
@@ -63,20 +74,30 @@ class GameMenu(Window):
             or self.player.pos.y > self.map.size.y / 2
         ):
             self.game_over()
+            return
 
         for asteroid in self.map.asteroids:
             a_pos_int = camera.get_draw_pos(asteroid.pos)
             p_pos_int = camera.get_draw_pos(self.player.get_draw_pos())
             if a_pos_int == p_pos_int:
                 self.game_over()
-
-        return super().update()
+                return
 
     def draw(self):
         self.map.draw()
         self.player.draw()
 
         return super().draw()
+
+
+class EndGameMenu(Window):
+    def __init__(self):
+        super().__init__()
+
+        layout = VBoxLayout()
+        self.set_widget(layout)
+
+        layout.add_widget(Label("Game Over!"))
 
 
 class NotificationMenu(Window):
@@ -115,4 +136,5 @@ class NotificationMenu(Window):
 
 
 game_menu = GameMenu()
+end_game_menu = EndGameMenu()
 notification_menu = NotificationMenu()

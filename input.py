@@ -1,17 +1,25 @@
+from camera import camera
 import sys, os
-
 
 if os.name != "nt":
     import tty, termios
 
     fd = sys.stdin.fileno()
     old_settings = termios.tcgetattr(fd)
-    tty.setcbreak(fd)
+
+
+def prepare_terminal():
+    camera.hide_cursor()
+    if os.name == "nt":
+        os.system("")
+    else:
+        tty.setcbreak(fd)
 
 
 def restore_terminal():
     if os.name != "nt":
         termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
+    camera.show_cursor()
 
 
 def get_char():

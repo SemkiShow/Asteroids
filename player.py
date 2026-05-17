@@ -7,7 +7,7 @@ class Player:
     def __init__(self):
         self.pos: Vec2 = Vec2(0, 0)
         self.speed: float = 0
-        self.angle: float = 90
+        self.angle: float = 0
         self.friction: float = 0.3
         self.directions: str = "↑↗→↘↓↙←↖"
 

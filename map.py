@@ -59,10 +59,18 @@ class Asteroid:
         self.pos = pos
 
 
+class Bonus:
+    def __init__(self, pos: Vec2):
+        self.pos = pos
+
+
 class Map:
     def __init__(self) -> None:
-        self.asteroids: list[Asteroid] = []
         self.size: Vec2 = Vec2(0, 0)
+        self.asteroids: list[Asteroid] = []
+        self.player_pos: Vec2 = Vec2(0, 0)
+        self.bonuses: list[Bonus] = []
+        self.end_pos: Vec2 = Vec2(1, 1)
 
     def load(self, file_name: str):
         image: Image = Image()
@@ -72,11 +80,15 @@ class Map:
         for y in range(image.height):
             for x in range(image.width):
                 pixel = image.pixels[y * image.width + x]
-                r, g, b = pixel.x, pixel.y, pixel.z
-                if r != 255 or g != 255 or b != 255:
-                    self.asteroids.append(
-                        Asteroid(Vec2(x - image.width / 2, (y - image.height / 2) * camera.ratio))
-                    )
+                pos: Vec2 = Vec2(x - image.width / 2, (y - image.height / 2) * camera.ratio)
+                if pixel == IntVec3(0, 0, 0):
+                    self.asteroids.append(Asteroid(pos))
+                elif pixel == IntVec3(255, 0, 0):
+                    self.player_pos = pos
+                elif pixel == IntVec3(0, 255, 0):
+                    self.bonuses.append(Bonus(pos))
+                elif pixel == IntVec3(0, 0, 255):
+                    self.end_pos = pos
 
     def draw(self):
         # Draw world border
@@ -89,3 +101,6 @@ class Map:
 
         for asteroid in self.asteroids:
             camera.draw_text(asteroid.pos, "#", Colors.RED)
+
+        for bonus in self.bonuses:
+            camera.draw_text(bonus.pos, "+", Colors.GREEN)

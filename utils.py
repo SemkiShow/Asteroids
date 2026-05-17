@@ -25,6 +25,9 @@ class IntVec3:
         self.y = round(y)
         self.z = round(z)
 
+    def __eq__(self, other):
+        return (self.x == other.x) and (self.y == other.y) and (self.z == other.z)
+
 
 class Rec:
     def __init__(self, x: float, y: float, width: float, height: float):
