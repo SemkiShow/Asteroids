@@ -5,20 +5,20 @@ import math
 
 class Player:
     def __init__(self):
-        self.position: Vec2 = Vec2(0, 0)
+        self.pos: Vec2 = Vec2(0, 0)
         self.speed: float = 0
         self.angle: float = 90
         self.friction: float = 0.3
         self.directions: str = "↑↗→↘↓↙←↖"
 
     def translate(self, x: float, y: float):
-        self.position.x += x
-        self.position.y += y
+        self.pos.x += x
+        self.pos.y += y
 
     def update(self):
         self.translate(
             math.sin(self.angle * math.pi / 180) * self.speed,
-            -math.cos(self.angle * math.pi / 180) * self.speed * camera.character_ratio,
+            -math.cos(self.angle * math.pi / 180) * self.speed * camera.ratio,
         )
 
         self.speed -= self.friction * camera.get_delta_time()
@@ -26,11 +26,13 @@ class Player:
 
         # Set camera position so the player is in the center of the screen
         terminal_size = camera.get_terminal_size()
-        camera.position.x = math.floor(self.position.x) - terminal_size.x // 2
-        camera.position.y = math.floor(self.position.y) - terminal_size.y // 2
+        camera.pos.x = math.floor(self.pos.x) - terminal_size.x // 2
+        camera.pos.y = math.floor(self.pos.y) - terminal_size.y // 2
+
+    def get_draw_pos(self):
+        return Vec2(math.floor(self.pos.x), math.floor(self.pos.y))
 
     def draw(self):
-        draw_pos = Vec2(math.floor(self.position.x), math.floor(self.position.y))
         angle = mod(self.angle, 360)
         char = self.directions[round(angle / 360 * len(self.directions)) % len(self.directions)]
-        camera.draw_text(draw_pos, char, Colors.RED)
+        camera.draw_text(self.get_draw_pos(), char, Colors.MAGENTA)

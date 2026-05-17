@@ -27,9 +27,9 @@ class Colors:
 
 class Camera:
     def __init__(self):
-        self.position: IntVec2 = IntVec2(0, 0)
+        self.pos: IntVec2 = IntVec2(0, 0)
         self.buf: list[list[str]] = []
-        self.character_ratio: float = 13 / 29
+        self.ratio: float = 13 / 29
         self.tick_time: float = 0.01
 
         self.clear()
@@ -52,14 +52,21 @@ class Camera:
     def get_delta_time(self):
         return self.tick_time
 
-    def draw_text(self, pos: Vec2, text: str, color: str = Colors.RESET, world_pos: bool = True):
-        # Calculate the offset positions
+    def get_draw_pos(self, pos: Vec2, world_pos: bool = True):
         if world_pos:
-            nx = round(pos.x - self.position.x)
-            ny = round(pos.y - self.position.y)
+            return IntVec2(
+                round(pos.x - self.pos.x),
+                round(pos.y - self.pos.y),
+            )
         else:
-            nx = round(pos.x)
-            ny = round(pos.y)
+            return IntVec2(
+                round(pos.x),
+                round(pos.y),
+            )
+
+    def draw_text(self, pos: Vec2, text: str, color: str = Colors.RESET, world_pos: bool = True):
+        draw_pos = self.get_draw_pos(pos, world_pos)
+        nx, ny = draw_pos.x, draw_pos.y
 
         start_x = nx
         for char in text:
@@ -86,13 +93,8 @@ class Camera:
         color: str = Colors.BG_WHITE,
         world_pos: bool = True,
     ):
-        # Calculate the offset positions
-        if world_pos:
-            nx = round(rec.x - self.position.x)
-            ny = round(rec.y - self.position.y)
-        else:
-            nx = round(rec.x)
-            ny = round(rec.y)
+        draw_pos = self.get_draw_pos(rec.get_pos(), world_pos)
+        nx, ny = draw_pos.x, draw_pos.y
 
         for dy in range(rec.height):
             for dx in range(rec.width):

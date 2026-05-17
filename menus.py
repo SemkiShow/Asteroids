@@ -1,4 +1,6 @@
+from sys import platform
 from input import is_key_pressed
+from map import Map
 from player import Player
 from utils import *
 from widgets import *
@@ -8,11 +10,10 @@ import time
 class GameMenu(Window):
     def __init__(self):
         super().__init__()
-        self.visible = True
 
-        self.map_size: Vec2 = Vec2(80, 80 * camera.character_ratio)
         self.player: Player = Player()
-        self.x: float = 0
+        self.map: Map = Map()
+        self.map.load("resources/levels/1.ppm")
 
         layout = VBoxLayout()
         layout.set_padding(0)
@@ -26,9 +27,9 @@ class GameMenu(Window):
             lambda: True,
             lambda: position_label.set_text(
                 "Position: "
-                + str(round(self.player.position.x, 1))
+                + str(round(self.player.pos.x, 1))
                 + " "
-                + str(round(self.player.position.y, 1))
+                + str(round(self.player.pos.y, 1))
             ),
         )
 
@@ -41,9 +42,9 @@ class GameMenu(Window):
             lambda: speed_label.set_text("Speed: " + str(round(self.player.speed, 1))),
         )
 
-        self.connect(
-            lambda: is_key_pressed("w"), lambda: notification_menu.show("Notification\nSecond line")
-        )
+    def game_over(self):
+        self.player.speed = 0
+        notification_menu.show("Game Over!")
 
     def update(self):
         if is_key_pressed("a") or is_key_pressed("LEFT"):
@@ -55,22 +56,24 @@ class GameMenu(Window):
 
         self.player.update()
 
-        self.x += 1
-        self.x %= self.map_size.x // 2
+        if (
+            self.player.pos.x < -self.map.size.x / 2
+            or self.player.pos.x > self.map.size.x / 2
+            or self.player.pos.y < -self.map.size.y / 2
+            or self.player.pos.y > self.map.size.y / 2
+        ):
+            self.game_over()
+
+        for asteroid in self.map.asteroids:
+            a_pos_int = camera.get_draw_pos(asteroid.pos)
+            p_pos_int = camera.get_draw_pos(self.player.get_draw_pos())
+            if a_pos_int == p_pos_int:
+                self.game_over()
 
         return super().update()
 
     def draw(self):
-        # Draw world border
-        terminal_size = camera.get_terminal_size()
-        camera.draw_rec(Rec(0, 0, terminal_size.x, terminal_size.y), Colors.BG_RED, world_pos=False)
-        camera.draw_rec(
-            Rec(-self.map_size.x / 2, -self.map_size.y / 2, self.map_size.x, self.map_size.y),
-            Colors.RESET,
-        )
-
-        camera.draw_text(Vec2(self.x, self.x * camera.character_ratio), "t", Colors.BLUE)
-
+        self.map.draw()
         self.player.draw()
 
         return super().draw()
@@ -95,13 +98,18 @@ class NotificationMenu(Window):
         self.connect(lambda: True, move_layout)
 
     def show(self, message: str, open_time: float = 2):
-        self.message_label.set_text(message)
+        new_message = self.message_label.get_text()
+        if len(new_message) > 0:
+            new_message += "\n"
+        new_message += message
+        self.message_label.set_text(new_message)
         self.open_time = open_time
         self.timer = time.time()
         self.visible = True
 
     def update(self):
         if time.time() - self.timer >= self.open_time:
+            self.message_label.set_text("")
             self.visible = False
         return super().update()
 
