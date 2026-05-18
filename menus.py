@@ -19,28 +19,13 @@ class GameMenu(Window):
         layout.set_padding(0)
         self.set_widget(layout)
 
-        position_label = Label("")
-        position_label.color = Colors.YELLOW
-        layout.add_widget(position_label)
+        self.position_label = Label("")
+        self.position_label.color = Colors.YELLOW
+        layout.add_widget(self.position_label)
 
-        self.connect(
-            lambda: True,
-            lambda: position_label.set_text(
-                "Position: "
-                + str(round(self.player.pos.x, 1))
-                + " "
-                + str(round(self.player.pos.y, 1))
-            ),
-        )
-
-        speed_label = Label("")
-        speed_label.color = Colors.YELLOW
-        layout.add_widget(speed_label)
-
-        self.connect(
-            lambda: True,
-            lambda: speed_label.set_text("Speed: " + str(round(self.player.speed, 1))),
-        )
+        self.speed_label = Label("")
+        self.speed_label.color = Colors.YELLOW
+        layout.add_widget(self.speed_label)
 
     def load_map(self, file_name: str):
         self.map.load(file_name)
@@ -53,6 +38,11 @@ class GameMenu(Window):
 
     def update(self):
         super().update()
+
+        self.position_label.set_text(
+            "Position: " + str(round(self.player.pos.x, 1)) + " " + str(round(self.player.pos.y, 1))
+        )
+        self.speed_label.set_text("Speed: " + str(round(self.player.speed, 1)))
 
         # Don't run game update if the game is over
         if end_game_menu.visible:
@@ -67,19 +57,20 @@ class GameMenu(Window):
 
         self.player.update()
 
+        player_pos = self.player.get_draw_pos()
         if (
-            self.player.pos.x < -self.map.size.x / 2
-            or self.player.pos.x > self.map.size.x / 2
-            or self.player.pos.y < -self.map.size.y / 2
-            or self.player.pos.y > self.map.size.y / 2
+            player_pos.x < 0
+            or player_pos.x >= self.map.size.x
+            or player_pos.y < 0
+            or player_pos.y >= self.map.size.y
         ):
             self.game_over()
             return
 
+        player_pos = camera.get_draw_pos(self.player.get_draw_pos())
         for asteroid in self.map.asteroids:
-            a_pos_int = camera.get_draw_pos(asteroid.pos)
-            p_pos_int = camera.get_draw_pos(self.player.get_draw_pos())
-            if a_pos_int == p_pos_int:
+            asteroid_pos = camera.get_draw_pos(asteroid.pos)
+            if asteroid_pos == player_pos:
                 self.game_over()
                 return
 

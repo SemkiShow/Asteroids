@@ -80,7 +80,7 @@ class Map:
         for y in range(image.height):
             for x in range(image.width):
                 pixel = image.pixels[y * image.width + x]
-                pos: Vec2 = Vec2(x - image.width / 2, (y - image.height / 2) * camera.ratio)
+                pos: Vec2 = Vec2(x, y * camera.ratio)
                 if pixel == IntVec3(0, 0, 0):
                     self.asteroids.append(Asteroid(pos))
                 elif pixel == IntVec3(255, 0, 0):
@@ -95,7 +95,7 @@ class Map:
         terminal_size = camera.get_terminal_size()
         camera.draw_rec(Rec(0, 0, terminal_size.x, terminal_size.y), Colors.BG_RED, world_pos=False)
         camera.draw_rec(
-            Rec(-self.size.x / 2, -self.size.y / 2, self.size.x, self.size.y),
+            Rec(0, 0, self.size.x, self.size.y),
             Colors.RESET,
         )
 
