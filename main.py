@@ -10,7 +10,8 @@ if __name__ == "__main__":
 
     app: Application = Application()
     app.add_window(game_menu)
-    app.add_window(end_game_menu)
+    app.add_window(game_over_menu)
+    app.add_window(victory_menu)
     app.add_window(notification_menu)
     game_menu.visible = True
 

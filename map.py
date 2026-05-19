@@ -56,12 +56,12 @@ class Image:
 
 class Asteroid:
     def __init__(self, pos: Vec2):
-        self.pos = pos
+        self.pos: Vec2 = pos
 
 
 class Bonus:
     def __init__(self, pos: Vec2):
-        self.pos = pos
+        self.pos: Vec2 = pos
 
 
 class Map:
@@ -104,3 +104,5 @@ class Map:
 
         for bonus in self.bonuses:
             camera.draw_text(bonus.pos, "+", Colors.GREEN)
+
+        camera.draw_text(self.end_pos, "X", Colors.BG_GREEN)
