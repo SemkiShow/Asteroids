@@ -6,6 +6,7 @@ import os
 class Colors:
     RESET: str = "\x1b[0m"
 
+    BLACK: str = "\x1b[30m"
     RED: str = "\x1b[31m"
     GREEN: str = "\x1b[32m"
     YELLOW: str = "\x1b[33m"
@@ -15,6 +16,7 @@ class Colors:
     WHITE: str = "\x1b[37m"
     DEFAULT: str = "\x1b[39m"
 
+    BG_BLACK: str = "\x1b[40m"
     BG_RED: str = "\x1b[41m"
     BG_GREEN: str = "\x1b[42m"
     BG_YELLOW: str = "\x1b[43m"
@@ -41,7 +43,7 @@ class Camera:
     def clear(self):
         print("\x1b[H", end="")
         terminal_size = self.get_terminal_size()
-        self.buf = [[" " for x in range(terminal_size.x)] for y in range(terminal_size.y)]
+        self.buf = [[" " for _ in range(terminal_size.x)] for _ in range(terminal_size.y)]
 
     def hide_cursor(self):
         print("\x1b[?25l")

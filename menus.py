@@ -2,7 +2,7 @@ from input import is_key_pressed
 from map import Map, Bonus
 from player import Player
 from utils import *
-from widgets import *
+from tui import *
 import time
 
 
@@ -14,18 +14,6 @@ class GameMenu(Window):
         self.map: Map = Map()
 
         self.load_map("resources/levels/1.ppm")
-
-        layout = VBoxLayout()
-        layout.set_padding(0)
-        self.set_widget(layout)
-
-        self.position_label = Label("")
-        self.position_label.color = Colors.YELLOW
-        layout.add_widget(self.position_label)
-
-        self.speed_label = Label("")
-        self.speed_label.color = Colors.YELLOW
-        layout.add_widget(self.speed_label)
 
     def load_map(self, file_name: str):
         self.map.load(file_name)
@@ -43,11 +31,6 @@ class GameMenu(Window):
 
     def update(self):
         super().update()
-
-        self.position_label.set_text(
-            "Position: " + str(round(self.player.pos.x, 1)) + " " + str(round(self.player.pos.y, 1))
-        )
-        self.speed_label.set_text("Speed: " + str(round(self.player.speed, 1)))
 
         # Don't run game update if the game is over
         if game_over_menu.visible or victory_menu.visible:
@@ -95,6 +78,20 @@ class GameMenu(Window):
         self.map.draw()
         self.player.draw()
 
+        self.label(
+            Vec2(0, 0),
+            "Position: "
+            + str(round(self.player.pos.x, 1))
+            + " "
+            + str(round(self.player.pos.y, 1)),
+            Colors.YELLOW,
+        )
+        self.label(Vec2(0, 1), "Speed: " + str(round(self.player.speed, 1)), Colors.YELLOW)
+
+        self.button(Vec2(0, 2), "Button A")
+        if self.button(Vec2(0, 3), "Button B"):
+            self.label(Vec2(0, 4), "Button B pressed!")
+
         return super().draw()
 
 
@@ -102,53 +99,49 @@ class GameOverMenu(Window):
     def __init__(self):
         super().__init__()
 
-        layout = VBoxLayout()
-        self.set_widget(layout)
-
-        layout.add_widget(Label("Game Over!"))
+    def draw(self):
+        self.label(Vec2(0, 0), "Game Over!")
+        return super().draw()
 
 
 class VictoryMenu(Window):
     def __init__(self):
         super().__init__()
 
-        layout = VBoxLayout()
-        self.set_widget(layout)
-
-        layout.add_widget(Label("You won!"))
+    def draw(self):
+        self.label(Vec2(0, 0), "You won!")
+        return super().draw()
 
 
 class NotificationMenu(Window):
     def __init__(self):
         super().__init__()
 
+        self.message = ""
         self.open_time: float = 2
         self.timer: float = time.time()
 
-        self.layout = VBoxLayout()
-        self.set_widget(self.layout)
-
-        self.message_label = Label("")
-        self.layout.add_widget(self.message_label)
-
     def show(self, message: str, open_time: float = 2):
-        new_message = self.message_label.get_text()
-        if len(new_message) > 0:
-            new_message += "\n"
-        new_message += message
-        self.message_label.set_text(new_message)
+        if len(self.message) > 0:
+            self.message += "\n"
+        self.message += message
+
         self.open_time = open_time
         self.timer = time.time()
         self.visible = True
 
     def update(self):
         if time.time() - self.timer >= self.open_time:
-            self.message_label.set_text("")
+            self.message = ""
             self.visible = False
 
-        self.layout.bounds.x = camera.get_terminal_size().x - self.message_label.bounds.width
-
         return super().update()
+
+    def draw(self):
+        pos: Vec2 = Vec2(camera.get_terminal_size().x - measure_text(self.message).x, 0)
+        self.label(pos, self.message)
+
+        return super().draw()
 
 
 game_menu = GameMenu()

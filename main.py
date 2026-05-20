@@ -1,7 +1,7 @@
 from camera import camera
 from input import is_key_pressed, poll_events, prepare_terminal, reset_events, restore_terminal
 from menus import *
-from widgets import *
+from tui import *
 import time
 
 
@@ -25,8 +25,7 @@ if __name__ == "__main__":
 
             if time.time() - timer >= camera.tick_time:
                 camera.clear()
-                app.update()
-                app.draw()
+                app.frame()
                 camera.flush()
 
                 reset_events()

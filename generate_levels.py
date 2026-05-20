@@ -7,7 +7,7 @@ MAX_FILL = 1.25
 BONUSES_K = 0.25
 WIDTH = 200
 HEIGHT = 200
-MIN_DISTANCE = min(WIDTH / 1.5, HEIGHT / 1.5)
+MIN_DISTANCE = min(WIDTH / 2, HEIGHT / 2)
 
 
 def random_pos():
