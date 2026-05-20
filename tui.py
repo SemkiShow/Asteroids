@@ -42,10 +42,61 @@ class Window:
 
         return self.active and self.selected(idx) and is_key_pressed("ENTER")
 
+    def dropdown(
+        self, pos: Vec2, items: list[str], current_idx: int, active: bool
+    ) -> tuple[int, bool]:
+        idx = self._total_widgets
+        self._total_widgets += 1
+
+        selected = self.selected(idx)
+        if active:
+            self.active = False
+
+        color = Colors.RESET
+        if selected:
+            color = Colors.BG_WHITE + Colors.BLACK
+        if active:
+            color = Colors.BG_CYAN
+        camera.draw_text(pos, items[current_idx], color, world_pos=False)
+
+        next_idx = current_idx
+        next_active = active
+
+        if selected:
+            if is_key_pressed("ENTER"):
+                next_active = not next_active
+
+            if active:
+                max_width = max(len(item) for item in items)
+                pos.y += 1
+                for i, item in enumerate(items):
+                    text = item + " " * (max_width - len(item))
+                    camera.draw_text(
+                        pos,
+                        text,
+                        Colors.BG_WHITE + Colors.BLACK if i == current_idx else Colors.RESET,
+                        world_pos=False,
+                    )
+                    pos.y += 1
+
+                if is_key_pressed("UP"):
+                    next_idx -= 1
+                if is_key_pressed("DOWN"):
+                    next_idx += 1
+                if next_idx < 0:
+                    next_idx = 0
+                if next_idx >= len(items):
+                    next_idx = len(items) - 1
+
+        return (next_idx, next_active)
+
     def update(self):
         pass
 
     def poll_events(self):
+        if not self.active:
+            return
+
         if is_key_pressed("UP"):
             self._selected_idx -= 1
         if is_key_pressed("DOWN"):
@@ -61,7 +112,6 @@ class Window:
 
 class Application:
     def __init__(self):
-        self._update_bounds: bool = True
         self._windows: list[Window] = []
 
     def add_window(self, window: Window):

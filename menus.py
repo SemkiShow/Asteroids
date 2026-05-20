@@ -13,6 +13,9 @@ class GameMenu(Window):
         self.player: Player = Player()
         self.map: Map = Map()
 
+        self.dropdown_idx = 0
+        self.dropdown_active = False
+
         self.load_map("resources/levels/1.ppm")
 
     def load_map(self, file_name: str):
@@ -91,6 +94,9 @@ class GameMenu(Window):
         self.button(Vec2(0, 2), "Button A")
         if self.button(Vec2(0, 3), "Button B"):
             self.label(Vec2(0, 4), "Button B pressed!")
+        self.dropdown_idx, self.dropdown_active = self.dropdown(
+            Vec2(0, 4), ["A", "B", "CD"], self.dropdown_idx, self.dropdown_active
+        )
 
         return super().draw()
 
