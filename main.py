@@ -25,7 +25,8 @@ if __name__ == "__main__":
 
             if time.time() - timer >= camera.tick_time:
                 camera.clear()
-                app.frame()
+                app.update()
+                app.draw()
                 camera.flush()
 
                 reset_events()

@@ -128,7 +128,7 @@ class Application:
     def add_window(self, window: Window):
         self._windows.append(window)
 
-    def frame(self):
+    def update(self):
         for window in self._windows:
             window.reset()
 
@@ -140,4 +140,8 @@ class Application:
         for window in self._windows:
             if window.visible:
                 window.update()
+
+    def draw(self):
+        for window in self._windows:
+            if window.visible:
                 window.draw()

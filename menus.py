@@ -1,6 +1,5 @@
 from input import is_key_pressed
-from map import Map, Bonus
-from player import Player
+from game import Player, Map, Bonus
 from utils import *
 from tui import *
 import time
