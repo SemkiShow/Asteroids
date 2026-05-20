@@ -1,5 +1,6 @@
+from os import sendfile
 from camera import camera, Colors
-from input import is_key_pressed
+from input import get_last_pressed_ley, is_key_pressed
 from utils import *
 
 
@@ -43,7 +44,7 @@ class Window:
         return self.active and self.selected(idx) and is_key_pressed("ENTER")
 
     def dropdown(
-        self, pos: Vec2, items: list[str], current_idx: int, active: bool
+        self, pos: Vec2, items: list[str], item_idx: int, active: bool
     ) -> tuple[int, bool]:
         idx = self._total_widgets
         self._total_widgets += 1
@@ -57,38 +58,48 @@ class Window:
             color = Colors.BG_WHITE + Colors.BLACK
         if active:
             color = Colors.BG_CYAN
-        camera.draw_text(pos, items[current_idx], color, world_pos=False)
-
-        next_idx = current_idx
-        next_active = active
+        camera.draw_text(pos, items[item_idx], color, world_pos=False)
 
         if selected:
             if is_key_pressed("ENTER"):
-                next_active = not next_active
+                active = not active
 
             if active:
-                max_width = max(len(item) for item in items)
-                pos.y += 1
-                for i, item in enumerate(items):
-                    text = item + " " * (max_width - len(item))
-                    camera.draw_text(
-                        pos,
-                        text,
-                        Colors.BG_WHITE + Colors.BLACK if i == current_idx else Colors.RESET,
-                        world_pos=False,
-                    )
-                    pos.y += 1
-
                 if is_key_pressed("UP"):
-                    next_idx -= 1
+                    item_idx -= 1
                 if is_key_pressed("DOWN"):
-                    next_idx += 1
-                if next_idx < 0:
-                    next_idx = 0
-                if next_idx >= len(items):
-                    next_idx = len(items) - 1
+                    item_idx += 1
+                if item_idx < 0:
+                    item_idx = 0
+                if item_idx >= len(items):
+                    item_idx = len(items) - 1
 
-        return (next_idx, next_active)
+        return (item_idx, active)
+
+    def input_field(self, pos: Vec2, text: str) -> str:
+        idx = self._total_widgets
+        self._total_widgets += 1
+
+        selected = self.selected(idx)
+
+        MAX_WIDTH = 20
+        draw_text = text + "_" * max(0, MAX_WIDTH - len(text))
+        camera.draw_text(
+            pos,
+            draw_text,
+            Colors.BG_WHITE + Colors.BLACK if selected else Colors.RESET,
+            world_pos=False,
+        )
+
+        if selected:
+            key = get_last_pressed_ley()
+            if key:
+                if len(key) == 1 and key.isalnum():
+                    text += key
+                elif key == "BACKSPACE":
+                    text = text[:-1]
+
+        return text
 
     def update(self):
         pass

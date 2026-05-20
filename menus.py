@@ -15,6 +15,7 @@ class GameMenu(Window):
 
         self.dropdown_idx = 0
         self.dropdown_active = False
+        self.field_text = ""
 
         self.load_map("resources/levels/1.ppm")
 
@@ -97,6 +98,7 @@ class GameMenu(Window):
         self.dropdown_idx, self.dropdown_active = self.dropdown(
             Vec2(0, 4), ["A", "B", "CD"], self.dropdown_idx, self.dropdown_active
         )
+        self.field_text = self.input_field(Vec2(0, 5), self.field_text)
 
         return super().draw()
 

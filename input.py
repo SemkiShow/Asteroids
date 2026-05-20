@@ -48,6 +48,8 @@ def get_key():
         return "ENTER"
 
     if os.name == "nt":
+        if ord(char) == 8:
+            return "BACKSPACE"
         if ord(char) == 27:
             return "ESC"
         if ord(char) == 72:
@@ -75,6 +77,8 @@ def get_key():
                     return "LEFT"
                 return None
             return None
+        if ord(char) == 127:
+            return "BACKSPACE"
 
     return char
 
@@ -95,3 +99,7 @@ def reset_events():
 
 def is_key_pressed(key: str):
     return key in _keys
+
+
+def get_last_pressed_ley() -> str | None:
+    return None if len(_keys) == 0 else _keys[-1]
