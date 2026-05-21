@@ -195,7 +195,7 @@ class PauseMenu(Window):
     def draw(self):
         terminal_size = camera.get_terminal_size()
 
-        rec = Rec(terminal_size.x // 2, terminal_size.y // 2, 21, 11)
+        rec = Rec(terminal_size.x // 2, terminal_size.y // 2, 21, 8)
         rec.x -= rec.width // 2
         rec.y -= rec.height // 2
 
@@ -216,7 +216,7 @@ class PauseMenu(Window):
             parent_width=rec.width,
         ):
             self.set_visible(False)
-        rec.y += 2
+        rec.y += 1
 
         if self.button(
             rec.get_pos(),
@@ -228,7 +228,7 @@ class PauseMenu(Window):
         ):
             game_menu.restart_game()
             self.set_visible(False)
-        rec.y += 2
+        rec.y += 1
 
         if self.button(
             rec.get_pos(),
@@ -241,7 +241,7 @@ class PauseMenu(Window):
             game_menu.map.set_random_seed()
             game_menu.restart_game()
             self.set_visible(False)
-        rec.y += 2
+        rec.y += 1
 
         if self.button(
             rec.get_pos(),
@@ -254,7 +254,7 @@ class PauseMenu(Window):
             game_menu.set_visible(False)
             main_menu.set_visible(True)
             self.set_visible(False)
-        rec.y += 2
+        rec.y += 1
 
         return super().draw()
 
@@ -266,7 +266,7 @@ class GameOverMenu(Window):
     def draw(self):
         terminal_size = camera.get_terminal_size()
 
-        rec = Rec(terminal_size.x // 2, terminal_size.y // 2, 21, 9)
+        rec = Rec(terminal_size.x // 2, terminal_size.y // 2, 21, 7)
         rec.x -= rec.width // 2
         rec.y -= rec.height // 2
 
@@ -288,7 +288,7 @@ class GameOverMenu(Window):
         ):
             game_menu.restart_game()
             self.set_visible(False)
-        rec.y += 2
+        rec.y += 1
 
         if self.button(
             rec.get_pos(),
@@ -301,7 +301,7 @@ class GameOverMenu(Window):
             game_menu.map.set_random_seed()
             game_menu.restart_game()
             self.set_visible(False)
-        rec.y += 2
+        rec.y += 1
 
         if self.button(
             rec.get_pos(),
@@ -314,7 +314,7 @@ class GameOverMenu(Window):
             game_menu.set_visible(False)
             main_menu.set_visible(True)
             self.set_visible(False)
-        rec.y += 2
+        rec.y += 1
 
         return super().draw()
 
@@ -326,7 +326,7 @@ class VictoryMenu(Window):
     def draw(self):
         terminal_size = camera.get_terminal_size()
 
-        rec = Rec(terminal_size.x // 2, terminal_size.y // 2, 21, 7)
+        rec = Rec(terminal_size.x // 2, terminal_size.y // 2, 21, 6)
         rec.x -= rec.width // 2
         rec.y -= rec.height // 2
 
@@ -349,7 +349,7 @@ class VictoryMenu(Window):
             game_menu.map.set_random_seed()
             game_menu.restart_game()
             self.set_visible(False)
-        rec.y += 2
+        rec.y += 1
 
         if self.button(
             rec.get_pos(),
@@ -362,7 +362,7 @@ class VictoryMenu(Window):
             game_menu.set_visible(False)
             main_menu.set_visible(True)
             self.set_visible(False)
-        rec.y += 2
+        rec.y += 1
 
         return super().draw()
 
