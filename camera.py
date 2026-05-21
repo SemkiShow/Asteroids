@@ -26,6 +26,8 @@ class Colors:
     BG_WHITE: str = "\x1b[47m"
     BG_DEFAULT: str = "\x1b[49m"
 
+    INVERTED: str = BG_WHITE + BLACK
+
 
 class Camera:
     def __init__(self):

@@ -1,5 +1,5 @@
 from camera import camera
-from input import is_key_pressed, poll_events, prepare_terminal, reset_events, restore_terminal
+from input import *
 from menus import *
 from tui import *
 import time

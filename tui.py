@@ -27,6 +27,9 @@ class Window:
     def selected(self, idx: int):
         return idx == self._selected_idx
 
+    def has_widgets(self):
+        return self._total_widgets > 0
+
     def label(self, pos: Vec2, text: str, color: str = Colors.RESET):
         camera.draw_text(pos, text, color, world_pos=False)
 
@@ -37,7 +40,7 @@ class Window:
         camera.draw_text(
             pos,
             text,
-            Colors.BG_WHITE + Colors.BLACK if self.selected(idx) else Colors.RESET,
+            Colors.INVERTED if self.selected(idx) else Colors.RESET,
             world_pos=False,
         )
 
@@ -55,7 +58,7 @@ class Window:
 
         color = Colors.RESET
         if selected:
-            color = Colors.BG_WHITE + Colors.BLACK
+            color = Colors.INVERTED
         if active:
             color = Colors.BG_CYAN
         camera.draw_text(pos, items[item_idx], color, world_pos=False)
@@ -76,18 +79,17 @@ class Window:
 
         return (item_idx, active)
 
-    def input_field(self, pos: Vec2, text: str) -> str:
+    def input_field(self, pos: Vec2, text: str, width: int = 20) -> str:
         idx = self._total_widgets
         self._total_widgets += 1
 
         selected = self.selected(idx)
 
-        MAX_WIDTH = 20
-        draw_text = text + "_" * max(0, MAX_WIDTH - len(text))
+        draw_text = text + "_" * max(0, width - len(text))
         camera.draw_text(
             pos,
-            draw_text,
-            Colors.BG_WHITE + Colors.BLACK if selected else Colors.RESET,
+            draw_text[-width:],
+            Colors.INVERTED if selected else Colors.RESET,
             world_pos=False,
         )
 
@@ -129,13 +131,19 @@ class Application:
         self._windows.append(window)
 
     def update(self):
+        active_idx: int = -1
+        for i, window in reversed(list(enumerate(self._windows))):
+            if window.visible and window.has_widgets():
+                active_idx = i
+                break
+        if active_idx < 0:
+            active_idx = len(self._windows) - 1
+
         for window in self._windows:
             window.reset()
 
-        for window in self._windows[::-1]:
-            if window.visible:
-                window.active = True
-                break
+        if active_idx >= 0:
+            self._windows[active_idx].active = True
 
         for window in self._windows:
             if window.visible:

@@ -1,7 +1,7 @@
 from input import is_key_pressed
 from game import Player, Map, Bonus
-from utils import *
 from tui import *
+from utils import *
 import time
 
 
@@ -18,14 +18,18 @@ class GameMenu(Window):
 
         self.load_map("resources/levels/1.ppm")
 
+    def restart_game(self):
+        self.player.pos = Vec2(self.map.player_pos.x, self.map.player_pos.y)
+        self.player.angle = 0
+
     def load_map(self, file_name: str):
         self.map.load(file_name)
-        self.player.pos = self.map.player_pos
+        self.restart_game()
 
     def game_over(self):
         self.player.speed = 0
         notification_menu.show("Game Over!")
-        # game_over_menu.visible = True
+        game_over_menu.visible = True
 
     def victory(self):
         self.player.speed = 0
@@ -107,7 +111,20 @@ class GameOverMenu(Window):
         super().__init__()
 
     def draw(self):
-        self.label(Vec2(0, 0), "Game Over!")
+        terminal_size = camera.get_terminal_size()
+        pos = Vec2(terminal_size.x / 2 - 5, terminal_size.y / 2)
+
+        camera.draw_rec(Rec(pos.x - 1, pos.y - 1, 12, 5), Colors.BG_BLACK, world_pos=False)
+
+        self.label(pos, "Game Over!", Colors.BG_BLACK)
+        pos.y += 2
+
+        if self.button(Vec2(pos.x + 1, pos.y), "Restart"):
+            game_menu.restart_game()
+            notification_menu.show("Restarting...")
+            self.visible = False
+        pos.y += 2
+
         return super().draw()
 
 
@@ -116,7 +133,19 @@ class VictoryMenu(Window):
         super().__init__()
 
     def draw(self):
-        self.label(Vec2(0, 0), "You won!")
+        terminal_size = camera.get_terminal_size()
+        pos = Vec2(terminal_size.x / 2 - 5, terminal_size.y / 2)
+
+        camera.draw_rec(Rec(pos.x - 1, pos.y - 1, 12, 5), Colors.BG_BLACK, world_pos=False)
+
+        self.label(pos, "You won!", Colors.BG_BLACK)
+        pos.y += 2
+
+        if self.button(Vec2(pos.x + 1, pos.y), "Restart"):
+            game_menu.restart_game()
+            self.visible = False
+        pos.y += 2
+
         return super().draw()
 
 
