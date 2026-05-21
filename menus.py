@@ -1,5 +1,5 @@
 from input import is_key_pressed
-from game import BonusType, Player, Map, Bonus
+from game import FieldType, Player, Map, Field
 from tui import *
 from utils import *
 import time, turtle, random
@@ -112,22 +112,30 @@ class GameMenu(Window):
                 self.game_over()
                 return
 
-        collected_bonuses: list[Bonus] = []
-        for bonus in self.map.bonuses:
-            bonus_pos = camera.get_draw_pos(bonus.pos)
-            if bonus_pos == player_pos:
-                collected_bonuses.append(bonus)
-        for bonus in collected_bonuses[::-1]:
-            match bonus.type:
-                case BonusType.Points:
+        collected_fields: list[Field] = []
+        for field in self.map.fields:
+            field_pos = camera.get_draw_pos(field.pos)
+            if field_pos == player_pos:
+                collected_fields.append(field)
+        for field in collected_fields[::-1]:
+            match field.type:
+                case FieldType.AddPoints:
                     points = random.randint(20, 50)
                     self.points += points
                     notification_menu.show("Picked up bonus: +" + str(points) + " points")
-                case BonusType.Time:
+                case FieldType.Time:
                     seconds = random.randint(10, 30) / 10
                     self.time -= seconds
                     notification_menu.show("Picked up bonus: -" + str(seconds) + "s")
-            self.map.bonuses.remove(bonus)
+                case FieldType.Speed:
+                    speed = random.randint(10, 30) / 10
+                    self.player.speed += speed
+                    notification_menu.show("Picked up debuff: +" + str(speed) + " speed")
+                case FieldType.RemovePoints:
+                    points = random.randint(20, 50)
+                    self.points -= points
+                    notification_menu.show("Picked up debuff: -" + str(points) + " points")
+            self.map.fields.remove(field)
 
         if player_pos == camera.get_draw_pos(self.map.end_pos):
             self.victory()

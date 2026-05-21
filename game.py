@@ -44,15 +44,17 @@ class Asteroid:
         self.pos: Vec2 = pos
 
 
-class BonusType(Enum):
-    Points = 0
+class FieldType(Enum):
+    AddPoints = 0
     Time = 1
+    Speed = 2
+    RemovePoints = 3
 
 
-class Bonus:
-    def __init__(self, pos: Vec2, bonus_type: BonusType):
+class Field:
+    def __init__(self, pos: Vec2, field_type: FieldType):
         self.pos: Vec2 = pos
-        self.type = bonus_type
+        self.type = field_type
 
 
 class Map:
@@ -62,7 +64,7 @@ class Map:
         self.size: Vec2 = Vec2(0, 0)
         self.asteroids: list[Asteroid] = []
         self.player_pos: Vec2 = Vec2(0, 0)
-        self.bonuses: list[Bonus] = []
+        self.fields: list[Field] = []
         self.end_pos: Vec2 = Vec2(1, 1)
 
     def set_random_seed(self):
@@ -95,12 +97,12 @@ class Map:
                     self.asteroids.append(Asteroid(pos))
                     level[y][x] = True
 
-        self.bonuses.clear()
+        self.fields.clear()
         for y in range(height):
             for x in range(width):
                 if random.randint(0, 1000) / 10 <= bonuses_fill and not level[y][x]:
                     pos: Vec2 = Vec2(x, y)
-                    self.bonuses.append(Bonus(pos, random.choice(list(BonusType))))
+                    self.fields.append(Field(pos, random.choice(list(FieldType))))
                     level[y][x] = True
 
         player = Player()
@@ -130,7 +132,7 @@ class Map:
         for asteroid in self.asteroids:
             camera.draw_text(asteroid.pos, "#", Colors.RED)
 
-        for bonus in self.bonuses:
-            camera.draw_text(bonus.pos, "+", Colors.GREEN)
+        for bonus in self.fields:
+            camera.draw_text(bonus.pos, "?", Colors.BLUE)
 
         camera.draw_text(self.end_pos, "X", Colors.BG_GREEN)
