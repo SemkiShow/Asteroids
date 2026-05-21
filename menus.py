@@ -1,8 +1,8 @@
 from input import is_key_pressed
-from game import Player, Map, Bonus
+from game import BonusType, Player, Map, Bonus
 from tui import *
 from utils import *
-import time, turtle
+import time, turtle, random
 
 
 class GameMenu(Window):
@@ -17,7 +17,7 @@ class GameMenu(Window):
         self.field_text = ""
 
         turtle.tracer(False)
-        turtle.speed(0)
+        turtle.speed("fastest")
         self.map.set_random_seed()
         self.restart_game()
 
@@ -31,6 +31,8 @@ class GameMenu(Window):
         self.map.reload_game()
         self.player.pos = Vec2(self.map.player_pos.x, self.map.player_pos.y)
         self.player.angle = 0
+        self.points: int = 0
+        self.time: float = 0
 
         # Set up the screen
         turtle.Screen().setup(self.map.size.x * 1.25, self.map.size.y / camera.ratio * 1.25)
@@ -90,6 +92,9 @@ class GameMenu(Window):
         self.player.update()
         self.move_turtle()
 
+        self.points += math.floor(self.player.speed)
+        self.time += camera.get_delta_time()
+
         player_pos = self.player.get_draw_pos()
         if (
             player_pos.x < 0
@@ -113,6 +118,15 @@ class GameMenu(Window):
             if bonus_pos == player_pos:
                 collected_bonuses.append(bonus)
         for bonus in collected_bonuses[::-1]:
+            match bonus.type:
+                case BonusType.Points:
+                    points = random.randint(20, 50)
+                    self.points += points
+                    notification_menu.show("Picked up bonus: +" + str(points) + " points")
+                case BonusType.Time:
+                    seconds = random.randint(10, 30) / 10
+                    self.time -= seconds
+                    notification_menu.show("Picked up bonus: -" + str(seconds) + "s")
             self.map.bonuses.remove(bonus)
 
         if player_pos == camera.get_draw_pos(self.map.end_pos):
@@ -123,24 +137,9 @@ class GameMenu(Window):
         self.map.draw()
         self.player.draw()
 
-        self.label(
-            Vec2(0, 0),
-            "Position: "
-            + str(round(self.player.pos.x, 1))
-            + " "
-            + str(round(self.player.pos.y, 1)),
-            Colors.YELLOW,
-        )
-
-        self.label(Vec2(0, 1), "Speed: " + str(round(self.player.speed, 1)), Colors.YELLOW)
-
-        self.label(Vec2(0, 2), "Seed: " + str(self.map.seed), Colors.YELLOW)
-
-        collision = False
-        for asteroid in self.map.asteroids:
-            if asteroid.pos.distance(self.map.player_pos) < 1:
-                collision = True
-        self.label(Vec2(0, 3), str(collision))
+        self.label(Vec2(0, 0), "Speed: " + str(round(self.player.speed, 1)), Colors.YELLOW)
+        self.label(Vec2(0, 1), "Points: " + str(self.points), Colors.YELLOW)
+        self.label(Vec2(0, 2), "Time: " + str(round(self.time, 1)) + "s", Colors.YELLOW)
 
         return super().draw()
 

@@ -1,5 +1,5 @@
 from utils import *
-import os
+import os, time
 
 
 # https://gist.github.com/ConnerWill/d4b6c776b509add763e17f9f113fd25b
@@ -35,6 +35,7 @@ class Camera:
         self.buf: list[list[str]] = []
         self.ratio: float = 13 / 29
         self.tick_time: float = 0.01
+        self.delta_time: float = time.time()
 
         self.clear()
 
@@ -54,7 +55,7 @@ class Camera:
         print("\x1b[?25h")
 
     def get_delta_time(self):
-        return self.tick_time
+        return time.time() - self.delta_time
 
     def get_draw_pos(self, pos: Vec2, world_pos: bool = True):
         if world_pos:
@@ -116,6 +117,7 @@ class Camera:
 
     def flush(self):
         print("\n".join("".join(row) for row in self.buf), end="")
+        self.delta_time = time.time()
 
 
 camera = Camera()

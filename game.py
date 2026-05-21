@@ -1,6 +1,7 @@
 from camera import camera, Colors
 from utils import *
 import math, random
+from enum import Enum
 
 
 class Player:
@@ -43,9 +44,15 @@ class Asteroid:
         self.pos: Vec2 = pos
 
 
+class BonusType(Enum):
+    Points = 0
+    Time = 1
+
+
 class Bonus:
-    def __init__(self, pos: Vec2):
+    def __init__(self, pos: Vec2, bonus_type: BonusType):
         self.pos: Vec2 = pos
+        self.type = bonus_type
 
 
 class Map:
@@ -93,7 +100,7 @@ class Map:
             for x in range(width):
                 if random.randint(0, 1000) / 10 <= bonuses_fill and not level[y][x]:
                     pos: Vec2 = Vec2(x, y)
-                    self.bonuses.append(Bonus(pos))
+                    self.bonuses.append(Bonus(pos, random.choice(list(BonusType))))
                     level[y][x] = True
 
         player = Player()
