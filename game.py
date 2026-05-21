@@ -71,50 +71,45 @@ class Map:
         min_distance: float = 100,
     ):
         def random_pos():
-            return IntVec2(random.randint(0, width), random.randint(0, height))
-
-        def idx(x: int, y: int):
-            return y * width + x
+            return Vec2(random.randint(0, width - 1), random.randint(0, height - 1))
 
         random.seed(self.seed)
 
-        self.size = Vec2(width, height * camera.ratio)
+        height = math.floor(height * camera.ratio)
+        self.size = Vec2(width, height)
 
-        level: dict[int, str] = {}
-        for y in range(height):
-            for x in range(width):
-                level[idx(x, y)] = " "
+        level: list[list[bool]] = [[False for _ in range(width)] for _ in range(height)]
 
         self.asteroids.clear()
         for y in range(height):
             for x in range(width):
-                if random.randint(0, 1000) / 10 <= asteroids_fill:
-                    pos: Vec2 = Vec2(x, y * camera.ratio)
+                if random.randint(0, 1000) / 10 <= asteroids_fill and not level[y][x]:
+                    pos: Vec2 = Vec2(x, y)
                     self.asteroids.append(Asteroid(pos))
-                    level[idx(x, y)] = "#"
+                    level[y][x] = True
 
         self.bonuses.clear()
         for y in range(height):
             for x in range(width):
-                if random.randint(0, 1000) / 10 <= bonuses_fill:
-                    if level[idx(x, y)] == " ":
-                        pos: Vec2 = Vec2(x, y * camera.ratio)
-                        self.bonuses.append(Bonus(pos))
-                        level[idx(x, y)] = "+"
+                if random.randint(0, 1000) / 10 <= bonuses_fill and not level[y][x]:
+                    pos: Vec2 = Vec2(x, y)
+                    self.bonuses.append(Bonus(pos))
+                    level[y][x] = True
 
-        player_pos = random_pos()
-        player_pos_int = player_pos.y * width + player_pos.x
-        while level[player_pos_int] != " ":
-            player_pos = random_pos()
-        self.player_pos = Vec2(player_pos.x, player_pos.y * camera.ratio)
-        level[player_pos_int] = ">"
+        player = Player()
+        player.pos = random_pos()
+        player_pos = player.get_draw_pos()
+        while level[int(player_pos.y)][int(player_pos.x)]:
+            player.pos = random_pos()
+            player_pos = player.get_draw_pos()
+        self.player_pos = Vec2(player.pos.x, player.pos.y)
+        level[int(player_pos.y)][int(player_pos.x)] = True
 
         end_pos = random_pos()
-        end_pos_int = end_pos.y * width + end_pos.x
-        while level[end_pos_int] != " " or end_pos.distance(player_pos) < min_distance:
+        while level[int(end_pos.y)][int(end_pos.x)] or end_pos.distance(player_pos) < min_distance:
             end_pos = random_pos()
-        self.end_pos = Vec2(end_pos.x, end_pos.y * camera.ratio)
-        level[end_pos_int] = "X"
+        self.end_pos = Vec2(end_pos.x, end_pos.y)
+        level[int(end_pos.y)][int(end_pos.x)] = True
 
     def draw(self):
         # Draw world border

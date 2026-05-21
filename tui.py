@@ -2,6 +2,7 @@ from os import sendfile
 from camera import camera, Colors
 from input import get_last_pressed_ley, is_key_pressed
 from utils import *
+from enum import Enum
 
 
 def measure_text(text: str):
@@ -12,13 +13,36 @@ def measure_text(text: str):
     return size
 
 
+class Align(Enum):
+    Left = 0
+    Center = 1
+    Right = 2
+
+
+def apply_align(pos: Vec2, width: float, align: Align, parent_width: float):
+    match align:
+        case Align.Left:
+            pass
+        case Align.Center:
+            pos.x = max(pos.x, pos.x + (parent_width - width) / 2)
+        case Align.Right:
+            pos.x = max(pos.x, pos.x + (parent_width - width))
+
+
 class Window:
     def __init__(self):
-        self.visible = False
         self.active = False
 
+        self._visible = False
         self._selected_idx = 0
         self._total_widgets = 0
+
+    def set_visible(self, visible: bool):
+        self._visible = visible
+        self._selected_idx = 0
+
+    def is_visible(self):
+        return self._visible
 
     def reset(self):
         self.active = False
@@ -30,12 +54,28 @@ class Window:
     def has_widgets(self):
         return self._total_widgets > 0
 
-    def label(self, pos: Vec2, text: str, color: str = Colors.RESET):
+    def label(
+        self,
+        pos: Vec2,
+        text: str,
+        color: str = Colors.RESET,
+        align: Align = Align.Left,
+        parent_width: float = 0,
+    ):
+        apply_align(pos, measure_text(text).x, align, parent_width)
         camera.draw_text(pos, text, color, world_pos=False)
 
-    def button(self, pos: Vec2, text: str) -> bool:
+    def button(
+        self,
+        pos: Vec2,
+        text: str,
+        align: Align = Align.Left,
+        parent_width: float = 0,
+    ) -> bool:
         idx = self._total_widgets
         self._total_widgets += 1
+
+        apply_align(pos, measure_text(text).x, align, parent_width)
 
         camera.draw_text(
             pos,
@@ -47,10 +87,18 @@ class Window:
         return self.active and self.selected(idx) and is_key_pressed("ENTER")
 
     def dropdown(
-        self, pos: Vec2, items: list[str], item_idx: int, active: bool
+        self,
+        pos: Vec2,
+        items: list[str],
+        item_idx: int,
+        active: bool,
+        align: Align = Align.Left,
+        parent_width: float = 0,
     ) -> tuple[int, bool]:
         idx = self._total_widgets
         self._total_widgets += 1
+
+        apply_align(pos, measure_text(items[item_idx]).x, align, parent_width)
 
         selected = self.selected(idx)
         if active:
@@ -79,9 +127,18 @@ class Window:
 
         return (item_idx, active)
 
-    def input_field(self, pos: Vec2, text: str, width: int = 20) -> str:
+    def input_field(
+        self,
+        pos: Vec2,
+        text: str,
+        width: int = 20,
+        align: Align = Align.Left,
+        parent_width: float = 0,
+    ) -> str:
         idx = self._total_widgets
         self._total_widgets += 1
+
+        apply_align(pos, width, align, parent_width)
 
         selected = self.selected(idx)
 
@@ -133,7 +190,7 @@ class Application:
     def update(self):
         active_idx: int = -1
         for i, window in reversed(list(enumerate(self._windows))):
-            if window.visible and window.has_widgets():
+            if window.is_visible() and window.has_widgets():
                 active_idx = i
                 break
         if active_idx < 0:
@@ -146,10 +203,10 @@ class Application:
             self._windows[active_idx].active = True
 
         for window in self._windows:
-            if window.visible:
+            if window.is_visible():
                 window.update()
 
     def draw(self):
         for window in self._windows:
-            if window.visible:
+            if window.is_visible():
                 window.draw()

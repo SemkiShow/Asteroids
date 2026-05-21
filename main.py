@@ -13,7 +13,7 @@ if __name__ == "__main__":
     app.add_window(game_over_menu)
     app.add_window(victory_menu)
     app.add_window(notification_menu)
-    game_menu.visible = True
+    game_menu.set_visible(True)
 
     try:
         prepare_terminal()

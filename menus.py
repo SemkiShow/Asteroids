@@ -16,15 +16,15 @@ class GameMenu(Window):
         self.dropdown_active = False
         self.field_text = ""
 
-        turtle.speed(0)
         turtle.tracer(False)
+        turtle.speed(0)
         self.map.set_random_seed()
         self.restart_game()
 
     def map_to_turtle(self, pos: Vec2) -> Vec2:
         return Vec2(
-            (pos.x - self.map.size.x / 2) * 2,
-            (self.map.size.y / 2 - pos.y) / camera.ratio * 2,
+            (pos.x - self.map.size.x / 2),
+            (self.map.size.y / 2 - pos.y) / camera.ratio,
         )
 
     def restart_game(self):
@@ -33,22 +33,22 @@ class GameMenu(Window):
         self.player.angle = 0
 
         # Set up the screen
-        turtle.Screen().setup(self.map.size.x * 2, self.map.size.y / camera.ratio * 2)
+        turtle.Screen().setup(self.map.size.x * 1.25, self.map.size.y / camera.ratio * 1.25)
         turtle.clearscreen()
 
         # Draw goal
         turtle_end_pos = self.map_to_turtle(self.map.end_pos)
-        end_pos_size = 10
+        end_pos_size = 20
         turtle.color("green")
         turtle.width(3)
         turtle.penup()
         turtle.goto(turtle_end_pos.x, turtle_end_pos.y)
         turtle.pendown()
-        turtle.goto(turtle_end_pos.x + end_pos_size, turtle_end_pos.y - end_pos_size)
+        turtle.goto(turtle_end_pos.x + end_pos_size / 2, turtle_end_pos.y - end_pos_size / 2)
         turtle.penup()
-        turtle.goto(turtle_end_pos.x + end_pos_size, turtle_end_pos.y)
+        turtle.goto(turtle_end_pos.x + end_pos_size / 2, turtle_end_pos.y)
         turtle.pendown()
-        turtle.goto(turtle_end_pos.x, turtle_end_pos.y - end_pos_size)
+        turtle.goto(turtle_end_pos.x, turtle_end_pos.y - end_pos_size / 2)
         turtle.color("black")
         turtle.width(1)
 
@@ -66,18 +66,18 @@ class GameMenu(Window):
     def game_over(self):
         self.player.speed = 0
         notification_menu.show("Game Over!")
-        game_over_menu.visible = True
+        game_over_menu.set_visible(True)
 
     def victory(self):
         self.player.speed = 0
         notification_menu.show("You won!")
-        victory_menu.visible = True
+        victory_menu.set_visible(True)
 
     def update(self):
         super().update()
 
         # Don't run game update if the game is over
-        if game_over_menu.visible or victory_menu.visible:
+        if game_over_menu.is_visible() or victory_menu.is_visible():
             return
 
         if is_key_pressed("a") or is_key_pressed("LEFT"):
@@ -134,6 +134,14 @@ class GameMenu(Window):
 
         self.label(Vec2(0, 1), "Speed: " + str(round(self.player.speed, 1)), Colors.YELLOW)
 
+        self.label(Vec2(0, 2), "Seed: " + str(self.map.seed), Colors.YELLOW)
+
+        collision = False
+        for asteroid in self.map.asteroids:
+            if asteroid.pos.distance(self.map.player_pos) < 1:
+                collision = True
+        self.label(Vec2(0, 3), str(collision))
+
         return super().draw()
 
 
@@ -143,17 +151,29 @@ class GameOverMenu(Window):
 
     def draw(self):
         terminal_size = camera.get_terminal_size()
-        pos = Vec2(terminal_size.x / 2 - 5, terminal_size.y / 2)
 
-        camera.draw_rec(Rec(pos.x - 1, pos.y - 1, 12, 5), Colors.BG_BLACK, world_pos=False)
+        rec = Rec(terminal_size.x // 2, terminal_size.y // 2, 12, 7)
+        rec.x -= rec.width // 2
+        rec.y -= rec.height // 2
 
-        self.label(pos, "Game Over!", Colors.BG_BLACK)
-        pos.y += 2
+        camera.draw_rec(rec, Colors.BG_BLACK, world_pos=False)
+        rec.y += 1
 
-        if self.button(Vec2(pos.x + 1, pos.y), "Restart"):
+        self.label(
+            rec.get_pos(), "Game Over!", Colors.BG_BLACK, align=Align.Center, parent_width=rec.width
+        )
+        rec.y += 2
+
+        if self.button(rec.get_pos(), "Restart", align=Align.Center, parent_width=rec.width):
             game_menu.restart_game()
-            self.visible = False
-        pos.y += 2
+            self.set_visible(False)
+        rec.y += 2
+
+        if self.button(rec.get_pos(), "New game", align=Align.Center, parent_width=rec.width):
+            game_menu.map.set_random_seed()
+            game_menu.restart_game()
+            self.set_visible(False)
+        rec.y += 2
 
         return super().draw()
 
@@ -164,18 +184,24 @@ class VictoryMenu(Window):
 
     def draw(self):
         terminal_size = camera.get_terminal_size()
-        pos = Vec2(terminal_size.x / 2 - 5, terminal_size.y / 2)
 
-        camera.draw_rec(Rec(pos.x - 1, pos.y - 1, 12, 5), Colors.BG_BLACK, world_pos=False)
+        rec = Rec(terminal_size.x // 2, terminal_size.y // 2, 11, 5)
+        rec.x -= rec.width // 2
+        rec.y -= rec.height // 2
 
-        self.label(pos, "You won!", Colors.BG_BLACK)
-        pos.y += 2
+        camera.draw_rec(rec, Colors.BG_BLACK, world_pos=False)
+        rec.y += 1
 
-        if self.button(Vec2(pos.x + 1, pos.y), "Restart"):
+        self.label(
+            rec.get_pos(), "You won!", Colors.BG_BLACK, align=Align.Center, parent_width=rec.width
+        )
+        rec.y += 2
+
+        if self.button(rec.get_pos(), "New game", align=Align.Center, parent_width=rec.width):
             game_menu.map.set_random_seed()
             game_menu.restart_game()
-            self.visible = False
-        pos.y += 2
+            self.set_visible(False)
+        rec.y += 2
 
         return super().draw()
 
@@ -195,12 +221,12 @@ class NotificationMenu(Window):
 
         self.open_time = open_time
         self.timer = time.time()
-        self.visible = True
+        self.set_visible(True)
 
     def update(self):
         if time.time() - self.timer >= self.open_time:
             self.message = ""
-            self.visible = False
+            self.set_visible(False)
 
         return super().update()
 
