@@ -61,8 +61,9 @@ class Window:
         align: Align = Align.Left,
         parent_width: float = 0,
     ):
-        apply_align(pos, measure_text(text).x, align, parent_width)
-        camera.draw_text(pos, text, color, world_pos=False)
+        new_pos = Vec2(pos.x, pos.y)
+        apply_align(new_pos, measure_text(text).x, align, parent_width)
+        camera.draw_text(new_pos, text, color, world_pos=False)
 
     def button(
         self,
@@ -76,10 +77,11 @@ class Window:
         idx = self._total_widgets
         self._total_widgets += 1
 
-        apply_align(pos, measure_text(text).x, align, parent_width)
+        new_pos = Vec2(pos.x, pos.y)
+        apply_align(new_pos, measure_text(text).x, align, parent_width)
 
         camera.draw_text(
-            pos,
+            new_pos,
             text,
             selected_color if self.selected(idx) else idle_color,
             world_pos=False,
@@ -102,7 +104,8 @@ class Window:
         idx = self._total_widgets
         self._total_widgets += 1
 
-        apply_align(pos, measure_text(items[item_idx]).x, align, parent_width)
+        new_pos = Vec2(pos.x, pos.y)
+        apply_align(new_pos, measure_text(items[item_idx]).x, align, parent_width)
 
         selected = self.selected(idx)
         if active:
@@ -113,7 +116,7 @@ class Window:
             color = selected_color
         if active:
             color = active_color
-        camera.draw_text(pos, items[item_idx], color, world_pos=False)
+        camera.draw_text(new_pos, items[item_idx], color, world_pos=False)
 
         if selected:
             if is_key_pressed(Key.Enter):
@@ -144,13 +147,14 @@ class Window:
         idx = self._total_widgets
         self._total_widgets += 1
 
-        apply_align(pos, width, align, parent_width)
+        new_pos = Vec2(pos.x, pos.y)
+        apply_align(new_pos, width, align, parent_width)
 
         selected = self.selected(idx)
 
         draw_text = text + "_" * max(0, width - len(text))
         camera.draw_text(
-            pos,
+            new_pos,
             draw_text[-width:],
             selected_color if selected else idle_color,
             world_pos=False,

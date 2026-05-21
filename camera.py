@@ -49,10 +49,10 @@ class Camera:
         self.buf = [[" " for _ in range(terminal_size.x)] for _ in range(terminal_size.y)]
 
     def hide_cursor(self):
-        print("\x1b[?25l")
+        print("\x1b[?25l", end="")
 
     def show_cursor(self):
-        print("\x1b[?25h")
+        print("\x1b[?25h", end="")
 
     def get_delta_time(self):
         return time.time() - self.delta_time

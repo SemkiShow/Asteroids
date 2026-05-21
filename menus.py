@@ -5,6 +5,38 @@ from utils import *
 import time, turtle, random
 
 
+class ExitSuccess(KeyboardInterrupt): ...
+
+
+class MainMenu(Window):
+    def draw(self):
+        pos = Vec2(0, 0)
+        terminal_size = camera.get_terminal_size()
+
+        title = r"""
+    _        _                 _     _     
+   / \   ___| |_ ___ _ __ ___ (_) __| |___ 
+  / _ \ / __| __/ _ \ '__/ _ \| |/ _` / __|
+ / ___ \\__ \ ||  __/ | | (_) | | (_| \__ \
+/_/   \_\___/\__\___|_|  \___/|_|\__,_|___/
+                                           """
+        title = title[1:]  # Remove the first newline
+        self.label(pos, title, align=Align.Center, parent_width=terminal_size.x)
+        pos.y += measure_text(title).y
+
+        if self.button(pos, "Play", align=Align.Center, parent_width=terminal_size.x):
+            game_menu.map.set_random_seed()
+            game_menu.restart_game()
+            game_menu.set_visible(True)
+        pos.y += 2
+
+        if self.button(pos, "Exit", align=Align.Center, parent_width=terminal_size.x):
+            raise ExitSuccess
+        pos.y += 2
+
+        return super().draw()
+
+
 class GameMenu(Window):
     def __init__(self):
         super().__init__()
@@ -16,10 +48,10 @@ class GameMenu(Window):
         self.dropdown_active = False
         self.field_text = ""
 
-        turtle.tracer(False)
-        turtle.speed("fastest")
-        self.map.set_random_seed()
-        self.restart_game()
+    def set_visible(self, visible: bool):
+        if not visible:
+            turtle.done()
+        return super().set_visible(visible)
 
     def map_to_turtle(self, pos: Vec2) -> Vec2:
         return Vec2(
@@ -35,6 +67,8 @@ class GameMenu(Window):
         self.time: float = 0
 
         # Set up the screen
+        turtle.tracer(False)
+        turtle.speed("fastest")
         turtle.Screen().setup(self.map.size.x * 1.25, self.map.size.y / camera.ratio * 1.25)
         turtle.clearscreen()
 
@@ -265,6 +299,7 @@ class NotificationMenu(Window):
         return super().draw()
 
 
+main_menu = MainMenu()
 game_menu = GameMenu()
 game_over_menu = GameOverMenu()
 victory_menu = VictoryMenu()

@@ -9,11 +9,12 @@ if __name__ == "__main__":
     timer = time.time()
 
     app: Application = Application()
+    app.add_window(main_menu)
     app.add_window(game_menu)
     app.add_window(game_over_menu)
     app.add_window(victory_menu)
     app.add_window(notification_menu)
-    game_menu.set_visible(True)
+    main_menu.set_visible(True)
 
     try:
         prepare_terminal()
@@ -31,6 +32,8 @@ if __name__ == "__main__":
 
                 reset_events()
                 timer = time.time()
-
+    except ExitSuccess:
+        # Clear the terminal on successful exit
+        print("\x1b[J", end="")
     finally:
         restore_terminal()
