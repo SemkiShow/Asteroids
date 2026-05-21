@@ -76,7 +76,7 @@ class Map:
         width: int = 200,
         height: int = 200,
         asteroids_fill: float = 0.1,
-        bonuses_fill: float = 0.025,
+        fields_fill: float = 0.025,
         min_distance: float = 100,
     ):
         def random_pos():
@@ -100,7 +100,7 @@ class Map:
         self.fields.clear()
         for y in range(height):
             for x in range(width):
-                if random.randint(0, 1000) / 10 <= bonuses_fill and not level[y][x]:
+                if random.randint(0, 1000) / 10 <= fields_fill and not level[y][x]:
                     pos: Vec2 = Vec2(x, y)
                     self.fields.append(Field(pos, random.choice(list(FieldType))))
                     level[y][x] = True
@@ -132,7 +132,7 @@ class Map:
         for asteroid in self.asteroids:
             camera.draw_text(asteroid.pos, "#", Colors.RED)
 
-        for bonus in self.fields:
-            camera.draw_text(bonus.pos, "?", Colors.BLUE)
+        for field in self.fields:
+            camera.draw_text(field.pos, "?", Colors.BLUE)
 
         camera.draw_text(self.end_pos, "X", Colors.BG_GREEN)

@@ -69,6 +69,8 @@ class Window:
         self,
         pos: Vec2,
         text: str,
+        idle_color: str = Colors.RESET,
+        selected_color: str = Colors.INVERTED,
         align: Align = Align.Left,
         parent_width: float = 0,
     ) -> bool:
@@ -80,7 +82,7 @@ class Window:
         camera.draw_text(
             pos,
             text,
-            Colors.INVERTED if self.selected(idx) else Colors.RESET,
+            selected_color if self.selected(idx) else idle_color,
             world_pos=False,
         )
 
@@ -92,6 +94,9 @@ class Window:
         items: list[str],
         item_idx: int,
         active: bool,
+        idle_color: str = Colors.RESET,
+        selected_color: str = Colors.INVERTED,
+        active_color: str = Colors.BG_CYAN,
         align: Align = Align.Left,
         parent_width: float = 0,
     ) -> tuple[int, bool]:
@@ -104,11 +109,11 @@ class Window:
         if active:
             self.active = False
 
-        color = Colors.RESET
+        color = idle_color
         if selected:
-            color = Colors.INVERTED
+            color = selected_color
         if active:
-            color = Colors.BG_CYAN
+            color = active_color
         camera.draw_text(pos, items[item_idx], color, world_pos=False)
 
         if selected:
@@ -132,6 +137,8 @@ class Window:
         pos: Vec2,
         text: str,
         width: int = 20,
+        idle_color: str = Colors.RESET,
+        selected_color: str = Colors.INVERTED,
         align: Align = Align.Left,
         parent_width: float = 0,
     ) -> str:
@@ -146,7 +153,7 @@ class Window:
         camera.draw_text(
             pos,
             draw_text[-width:],
-            Colors.INVERTED if selected else Colors.RESET,
+            selected_color if selected else idle_color,
             world_pos=False,
         )
 

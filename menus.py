@@ -163,20 +163,34 @@ class GameOverMenu(Window):
         rec.x -= rec.width // 2
         rec.y -= rec.height // 2
 
-        camera.draw_rec(rec, Colors.BG_BLACK, world_pos=False)
+        camera.draw_rec(rec, world_pos=False)
         rec.y += 1
 
         self.label(
-            rec.get_pos(), "Game Over!", Colors.BG_BLACK, align=Align.Center, parent_width=rec.width
+            rec.get_pos(), "Game Over!", Colors.INVERTED, align=Align.Center, parent_width=rec.width
         )
         rec.y += 2
 
-        if self.button(rec.get_pos(), "Restart", align=Align.Center, parent_width=rec.width):
+        if self.button(
+            rec.get_pos(),
+            "Restart",
+            idle_color=Colors.INVERTED,
+            selected_color=Colors.RESET,
+            align=Align.Center,
+            parent_width=rec.width,
+        ):
             game_menu.restart_game()
             self.set_visible(False)
         rec.y += 2
 
-        if self.button(rec.get_pos(), "New game", align=Align.Center, parent_width=rec.width):
+        if self.button(
+            rec.get_pos(),
+            "New game",
+            idle_color=Colors.INVERTED,
+            selected_color=Colors.RESET,
+            align=Align.Center,
+            parent_width=rec.width,
+        ):
             game_menu.map.set_random_seed()
             game_menu.restart_game()
             self.set_visible(False)
@@ -196,15 +210,22 @@ class VictoryMenu(Window):
         rec.x -= rec.width // 2
         rec.y -= rec.height // 2
 
-        camera.draw_rec(rec, Colors.BG_BLACK, world_pos=False)
+        camera.draw_rec(rec, world_pos=False)
         rec.y += 1
 
         self.label(
-            rec.get_pos(), "You won!", Colors.BG_BLACK, align=Align.Center, parent_width=rec.width
+            rec.get_pos(), "You won!", Colors.INVERTED, align=Align.Center, parent_width=rec.width
         )
         rec.y += 2
 
-        if self.button(rec.get_pos(), "New game", align=Align.Center, parent_width=rec.width):
+        if self.button(
+            rec.get_pos(),
+            "New game",
+            idle_color=Colors.INVERTED,
+            selected_color=Colors.RESET,
+            align=Align.Center,
+            parent_width=rec.width,
+        ):
             game_menu.map.set_random_seed()
             game_menu.restart_game()
             self.set_visible(False)
