@@ -2,7 +2,7 @@ from input import is_key_pressed
 from game import Player, Map, Bonus
 from tui import *
 from utils import *
-import time
+import time, turtle
 
 
 class GameMenu(Window):
@@ -16,13 +16,52 @@ class GameMenu(Window):
         self.dropdown_active = False
         self.field_text = ""
 
+        turtle.speed(0)
+        turtle.tracer(False)
         self.map.set_random_seed()
         self.restart_game()
+
+    def map_to_turtle(self, pos: Vec2) -> Vec2:
+        return Vec2(
+            (pos.x - self.map.size.x / 2) * 2,
+            (self.map.size.y / 2 - pos.y) / camera.ratio * 2,
+        )
 
     def restart_game(self):
         self.map.reload_game()
         self.player.pos = Vec2(self.map.player_pos.x, self.map.player_pos.y)
         self.player.angle = 0
+
+        # Set up the screen
+        turtle.Screen().setup(self.map.size.x * 2, self.map.size.y / camera.ratio * 2)
+        turtle.clearscreen()
+
+        # Draw goal
+        turtle_end_pos = self.map_to_turtle(self.map.end_pos)
+        end_pos_size = 10
+        turtle.color("green")
+        turtle.width(3)
+        turtle.penup()
+        turtle.goto(turtle_end_pos.x, turtle_end_pos.y)
+        turtle.pendown()
+        turtle.goto(turtle_end_pos.x + end_pos_size, turtle_end_pos.y - end_pos_size)
+        turtle.penup()
+        turtle.goto(turtle_end_pos.x + end_pos_size, turtle_end_pos.y)
+        turtle.pendown()
+        turtle.goto(turtle_end_pos.x, turtle_end_pos.y - end_pos_size)
+        turtle.color("black")
+        turtle.width(1)
+
+        # Move to the player position
+        turtle.penup()
+        self.move_turtle()
+        turtle.pendown()
+
+    def move_turtle(self):
+        pos = self.map_to_turtle(self.player.pos)
+        turtle.goto(pos.x, pos.y)
+        turtle.settiltangle(90 - self.player.angle)
+        turtle.update()
 
     def game_over(self):
         self.player.speed = 0
@@ -49,6 +88,7 @@ class GameMenu(Window):
             self.player.speed += 0.5
 
         self.player.update()
+        self.move_turtle()
 
         player_pos = self.player.get_draw_pos()
         if (
@@ -112,7 +152,6 @@ class GameOverMenu(Window):
 
         if self.button(Vec2(pos.x + 1, pos.y), "Restart"):
             game_menu.restart_game()
-            notification_menu.show("Restarting...")
             self.visible = False
         pos.y += 2
 
