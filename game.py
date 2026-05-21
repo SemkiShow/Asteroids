@@ -1,6 +1,6 @@
 from camera import camera, Colors
 from utils import *
-import math
+import math, random
 
 
 class Player:
@@ -38,58 +38,6 @@ class Player:
         camera.draw_text(self.get_draw_pos(), char, Colors.MAGENTA)
 
 
-class Image:
-    def __init__(self) -> None:
-        self.pixels: list[IntVec3] = []
-        self.width = 0
-        self.height = 0
-
-    def load_ppm(self, file_name: str):
-        file = open(file_name, "r")
-        if not file:
-            print(f"Error: failed to open {file_name}")
-            return
-
-        magic_number = None
-        size = None
-        depth = None
-
-        self.pixels.clear()
-        self.width = 0
-        self.height = 0
-
-        # Read data before the pixels
-        line = file.readline()
-        while line:
-            if line.strip()[0] == "#":
-                line = file.readline()
-                continue
-
-            if not magic_number:
-                magic_number = line
-                if magic_number != "P3\n":
-                    print("Error: invalid file given")
-                    return
-            elif not size:
-                size = line.split(" ")
-                self.width, self.height = int(size[0]), int(size[1])
-            elif not depth:
-                depth = int(line)
-                if depth != 255:
-                    print("Error: invalid color depth in file")
-                    return
-            else:
-                break
-            line = file.readline()
-
-        # Read the rest of the file
-        values = (line + "\n" + file.read()).split()
-        for i in range(0, len(values), 3):
-            self.pixels.append(IntVec3(int(values[i + 0]), int(values[i + 1]), int(values[i + 2])))
-
-        file.close()
-
-
 class Asteroid:
     def __init__(self, pos: Vec2):
         self.pos: Vec2 = pos
@@ -102,29 +50,71 @@ class Bonus:
 
 class Map:
     def __init__(self) -> None:
+        self.seed = 0
+
         self.size: Vec2 = Vec2(0, 0)
         self.asteroids: list[Asteroid] = []
         self.player_pos: Vec2 = Vec2(0, 0)
         self.bonuses: list[Bonus] = []
         self.end_pos: Vec2 = Vec2(1, 1)
 
-    def load(self, file_name: str):
-        image: Image = Image()
-        image.load_ppm(file_name)
-        self.size = Vec2(image.width, image.height * camera.ratio)
+    def set_random_seed(self):
+        self.seed = random.randint(0, 2**32)
+        random.seed(self.seed)
+
+    def reload_game(
+        self,
+        width: int = 200,
+        height: int = 200,
+        asteroids_fill: float = 0.1,
+        bonuses_fill: float = 0.025,
+        min_distance: float = 100,
+    ):
+        def random_pos():
+            return IntVec2(random.randint(0, width), random.randint(0, height))
+
+        def idx(x: int, y: int):
+            return y * width + x
+
+        random.seed(self.seed)
+
+        self.size = Vec2(width, height * camera.ratio)
+
+        level: dict[int, str] = {}
+        for y in range(height):
+            for x in range(width):
+                level[idx(x, y)] = " "
+
         self.asteroids.clear()
-        for y in range(image.height):
-            for x in range(image.width):
-                pixel = image.pixels[y * image.width + x]
-                pos: Vec2 = Vec2(x, y * camera.ratio)
-                if pixel == IntVec3(0, 0, 0):
+        for y in range(height):
+            for x in range(width):
+                if random.randint(0, 1000) / 10 <= asteroids_fill:
+                    pos: Vec2 = Vec2(x, y * camera.ratio)
                     self.asteroids.append(Asteroid(pos))
-                elif pixel == IntVec3(255, 0, 0):
-                    self.player_pos = pos
-                elif pixel == IntVec3(0, 255, 0):
-                    self.bonuses.append(Bonus(pos))
-                elif pixel == IntVec3(0, 0, 255):
-                    self.end_pos = pos
+                    level[idx(x, y)] = "#"
+
+        self.bonuses.clear()
+        for y in range(height):
+            for x in range(width):
+                if random.randint(0, 1000) / 10 <= bonuses_fill:
+                    if level[idx(x, y)] == " ":
+                        pos: Vec2 = Vec2(x, y * camera.ratio)
+                        self.bonuses.append(Bonus(pos))
+                        level[idx(x, y)] = "+"
+
+        player_pos = random_pos()
+        player_pos_int = player_pos.y * width + player_pos.x
+        while level[player_pos_int] != " ":
+            player_pos = random_pos()
+        self.player_pos = Vec2(player_pos.x, player_pos.y * camera.ratio)
+        level[player_pos_int] = ">"
+
+        end_pos = random_pos()
+        end_pos_int = end_pos.y * width + end_pos.x
+        while level[end_pos_int] != " " or end_pos.distance(player_pos) < min_distance:
+            end_pos = random_pos()
+        self.end_pos = Vec2(end_pos.x, end_pos.y * camera.ratio)
+        level[end_pos_int] = "X"
 
     def draw(self):
         # Draw world border

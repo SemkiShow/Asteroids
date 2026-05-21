@@ -16,15 +16,13 @@ class GameMenu(Window):
         self.dropdown_active = False
         self.field_text = ""
 
-        self.load_map("resources/levels/1.ppm")
+        self.map.set_random_seed()
+        self.restart_game()
 
     def restart_game(self):
+        self.map.reload_game()
         self.player.pos = Vec2(self.map.player_pos.x, self.map.player_pos.y)
         self.player.angle = 0
-
-    def load_map(self, file_name: str):
-        self.map.load(file_name)
-        self.restart_game()
 
     def game_over(self):
         self.player.speed = 0
@@ -93,15 +91,8 @@ class GameMenu(Window):
             + str(round(self.player.pos.y, 1)),
             Colors.YELLOW,
         )
-        self.label(Vec2(0, 1), "Speed: " + str(round(self.player.speed, 1)), Colors.YELLOW)
 
-        self.button(Vec2(0, 2), "Button A")
-        if self.button(Vec2(0, 3), "Button B"):
-            self.label(Vec2(0, 4), "Button B pressed!")
-        self.dropdown_idx, self.dropdown_active = self.dropdown(
-            Vec2(0, 4), ["A", "B", "CD"], self.dropdown_idx, self.dropdown_active
-        )
-        self.field_text = self.input_field(Vec2(0, 5), self.field_text)
+        self.label(Vec2(0, 1), "Speed: " + str(round(self.player.speed, 1)), Colors.YELLOW)
 
         return super().draw()
 
@@ -142,6 +133,7 @@ class VictoryMenu(Window):
         pos.y += 2
 
         if self.button(Vec2(pos.x + 1, pos.y), "Restart"):
+            game_menu.map.set_random_seed()
             game_menu.restart_game()
             self.visible = False
         pos.y += 2
