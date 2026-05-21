@@ -39,6 +39,7 @@ class Window:
     def set_visible(self, visible: bool):
         self._visible = visible
         self._selected_idx = 0
+        self.reset()
 
     def is_visible(self):
         return self._visible

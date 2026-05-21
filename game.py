@@ -16,6 +16,11 @@ class Player:
         self.pos.x += x
         self.pos.y += y
 
+    def restart_game(self):
+        self.pos = Vec2(0, 0)
+        self.speed = 0
+        self.angle = 0
+
     def update(self):
         self.translate(
             math.sin(self.angle * math.pi / 180) * self.speed,
@@ -71,7 +76,7 @@ class Map:
         self.seed = random.randint(0, 2**32)
         random.seed(self.seed)
 
-    def reload_game(
+    def restart_game(
         self,
         width: int = 200,
         height: int = 200,

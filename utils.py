@@ -22,16 +22,6 @@ class IntVec2:
         return math.sqrt((self.x - other.x) ** 2 + (self.y - other.y) ** 2)
 
 
-class IntVec3:
-    def __init__(self, x: float, y: float, z: float):
-        self.x = round(x)
-        self.y = round(y)
-        self.z = round(z)
-
-    def __eq__(self, other):
-        return (self.x == other.x) and (self.y == other.y) and (self.z == other.z)
-
-
 class Rec:
     def __init__(self, x: float, y: float, width: float, height: float):
         self.x = x

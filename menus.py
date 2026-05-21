@@ -9,6 +9,9 @@ class ExitSuccess(KeyboardInterrupt): ...
 
 
 class MainMenu(Window):
+    def __init__(self):
+        super().__init__()
+
     def draw(self):
         pos = Vec2(0, 0)
         terminal_size = camera.get_terminal_size()
@@ -28,6 +31,7 @@ class MainMenu(Window):
             game_menu.map.set_random_seed()
             game_menu.restart_game()
             game_menu.set_visible(True)
+            self.set_visible(False)
         pos.y += 2
 
         if self.button(pos, "Exit", align=Align.Center, parent_width=terminal_size.x):
@@ -48,11 +52,6 @@ class GameMenu(Window):
         self.dropdown_active = False
         self.field_text = ""
 
-    def set_visible(self, visible: bool):
-        if not visible:
-            turtle.done()
-        return super().set_visible(visible)
-
     def map_to_turtle(self, pos: Vec2) -> Vec2:
         return Vec2(
             (pos.x - self.map.size.x / 2),
@@ -60,9 +59,9 @@ class GameMenu(Window):
         )
 
     def restart_game(self):
-        self.map.reload_game()
+        self.map.restart_game()
+        self.player.restart_game()
         self.player.pos = Vec2(self.map.player_pos.x, self.map.player_pos.y)
-        self.player.angle = 0
         self.points: int = 0
         self.time: float = 0
 
@@ -70,6 +69,7 @@ class GameMenu(Window):
         turtle.tracer(False)
         turtle.speed("fastest")
         turtle.Screen().setup(self.map.size.x * 1.25, self.map.size.y / camera.ratio * 1.25)
+        turtle.title("Minimap")
         turtle.clearscreen()
 
         # Draw goal
@@ -112,8 +112,8 @@ class GameMenu(Window):
     def update(self):
         super().update()
 
-        # Don't run game update if the game is over
-        if game_over_menu.is_visible() or victory_menu.is_visible():
+        # Don't run game update if some specific menus are open
+        if pause_menu.is_visible() or game_over_menu.is_visible() or victory_menu.is_visible():
             return
 
         if is_key_pressed("a") or is_key_pressed(Key.Left):
@@ -122,6 +122,8 @@ class GameMenu(Window):
             self.player.angle += 45
         if is_key_pressed(" "):
             self.player.speed += 0.5
+        if is_key_pressed(Key.Escape):
+            pause_menu.set_visible(True)
 
         self.player.update()
         self.move_turtle()
@@ -186,6 +188,77 @@ class GameMenu(Window):
         return super().draw()
 
 
+class PauseMenu(Window):
+    def __init__(self):
+        super().__init__()
+
+    def draw(self):
+        terminal_size = camera.get_terminal_size()
+
+        rec = Rec(terminal_size.x // 2, terminal_size.y // 2, 21, 11)
+        rec.x -= rec.width // 2
+        rec.y -= rec.height // 2
+
+        camera.draw_rec(rec, world_pos=False)
+        rec.y += 1
+
+        self.label(
+            rec.get_pos(), "Paused", Colors.INVERTED, align=Align.Center, parent_width=rec.width
+        )
+        rec.y += 2
+
+        if self.button(
+            rec.get_pos(),
+            "Back to game",
+            idle_color=Colors.INVERTED,
+            selected_color=Colors.RESET,
+            align=Align.Center,
+            parent_width=rec.width,
+        ):
+            self.set_visible(False)
+        rec.y += 2
+
+        if self.button(
+            rec.get_pos(),
+            "Restart",
+            idle_color=Colors.INVERTED,
+            selected_color=Colors.RESET,
+            align=Align.Center,
+            parent_width=rec.width,
+        ):
+            game_menu.restart_game()
+            self.set_visible(False)
+        rec.y += 2
+
+        if self.button(
+            rec.get_pos(),
+            "New game",
+            idle_color=Colors.INVERTED,
+            selected_color=Colors.RESET,
+            align=Align.Center,
+            parent_width=rec.width,
+        ):
+            game_menu.map.set_random_seed()
+            game_menu.restart_game()
+            self.set_visible(False)
+        rec.y += 2
+
+        if self.button(
+            rec.get_pos(),
+            "Return to main menu",
+            idle_color=Colors.INVERTED,
+            selected_color=Colors.RESET,
+            align=Align.Center,
+            parent_width=rec.width,
+        ):
+            game_menu.set_visible(False)
+            main_menu.set_visible(True)
+            self.set_visible(False)
+        rec.y += 2
+
+        return super().draw()
+
+
 class GameOverMenu(Window):
     def __init__(self):
         super().__init__()
@@ -193,7 +266,7 @@ class GameOverMenu(Window):
     def draw(self):
         terminal_size = camera.get_terminal_size()
 
-        rec = Rec(terminal_size.x // 2, terminal_size.y // 2, 12, 7)
+        rec = Rec(terminal_size.x // 2, terminal_size.y // 2, 21, 9)
         rec.x -= rec.width // 2
         rec.y -= rec.height // 2
 
@@ -230,6 +303,19 @@ class GameOverMenu(Window):
             self.set_visible(False)
         rec.y += 2
 
+        if self.button(
+            rec.get_pos(),
+            "Return to main menu",
+            idle_color=Colors.INVERTED,
+            selected_color=Colors.RESET,
+            align=Align.Center,
+            parent_width=rec.width,
+        ):
+            game_menu.set_visible(False)
+            main_menu.set_visible(True)
+            self.set_visible(False)
+        rec.y += 2
+
         return super().draw()
 
 
@@ -240,7 +326,7 @@ class VictoryMenu(Window):
     def draw(self):
         terminal_size = camera.get_terminal_size()
 
-        rec = Rec(terminal_size.x // 2, terminal_size.y // 2, 11, 5)
+        rec = Rec(terminal_size.x // 2, terminal_size.y // 2, 21, 7)
         rec.x -= rec.width // 2
         rec.y -= rec.height // 2
 
@@ -262,6 +348,19 @@ class VictoryMenu(Window):
         ):
             game_menu.map.set_random_seed()
             game_menu.restart_game()
+            self.set_visible(False)
+        rec.y += 2
+
+        if self.button(
+            rec.get_pos(),
+            "Return to main menu",
+            idle_color=Colors.INVERTED,
+            selected_color=Colors.RESET,
+            align=Align.Center,
+            parent_width=rec.width,
+        ):
+            game_menu.set_visible(False)
+            main_menu.set_visible(True)
             self.set_visible(False)
         rec.y += 2
 
@@ -301,6 +400,7 @@ class NotificationMenu(Window):
 
 main_menu = MainMenu()
 game_menu = GameMenu()
+pause_menu = PauseMenu()
 game_over_menu = GameOverMenu()
 victory_menu = VictoryMenu()
 notification_menu = NotificationMenu()
