@@ -1,6 +1,5 @@
-from os import sendfile
 from camera import camera, Colors
-from input import get_last_pressed_ley, is_key_pressed
+from input import Key, get_last_pressed_ley, is_key_pressed
 from utils import *
 from enum import Enum
 
@@ -86,7 +85,7 @@ class Window:
             world_pos=False,
         )
 
-        return self.active and self.selected(idx) and is_key_pressed("ENTER")
+        return self.active and self.selected(idx) and is_key_pressed(Key.Enter)
 
     def dropdown(
         self,
@@ -117,13 +116,13 @@ class Window:
         camera.draw_text(pos, items[item_idx], color, world_pos=False)
 
         if selected:
-            if is_key_pressed("ENTER"):
+            if is_key_pressed(Key.Enter):
                 active = not active
 
             if active:
-                if is_key_pressed("UP"):
+                if is_key_pressed(Key.Up):
                     item_idx -= 1
-                if is_key_pressed("DOWN"):
+                if is_key_pressed(Key.Down):
                     item_idx += 1
                 if item_idx < 0:
                     item_idx = 0
@@ -162,7 +161,7 @@ class Window:
             if key:
                 if len(key) == 1 and key.isalnum():
                     text += key
-                elif key == "BACKSPACE":
+                elif key == Key.Backspace:
                     text = text[:-1]
 
         return text
@@ -174,9 +173,9 @@ class Window:
         if not self.active:
             return
 
-        if is_key_pressed("UP"):
+        if is_key_pressed(Key.Up):
             self._selected_idx -= 1
-        if is_key_pressed("DOWN"):
+        if is_key_pressed(Key.Down):
             self._selected_idx += 1
         if self._selected_idx < 0:
             self._selected_idx = 0

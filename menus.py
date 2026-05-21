@@ -1,4 +1,4 @@
-from input import is_key_pressed
+from input import Key, is_key_pressed
 from game import FieldType, Player, Map, Field
 from tui import *
 from utils import *
@@ -82,9 +82,9 @@ class GameMenu(Window):
         if game_over_menu.is_visible() or victory_menu.is_visible():
             return
 
-        if is_key_pressed("a") or is_key_pressed("LEFT"):
+        if is_key_pressed("a") or is_key_pressed(Key.Left):
             self.player.angle -= 45
-        if is_key_pressed("d") or is_key_pressed("RIGHT"):
+        if is_key_pressed("d") or is_key_pressed(Key.Right):
             self.player.angle += 45
         if is_key_pressed(" "):
             self.player.speed += 0.5

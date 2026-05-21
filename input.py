@@ -1,5 +1,6 @@
 from camera import camera
 import sys, os
+from enum import Enum
 
 if os.name != "nt":
     import tty, termios
@@ -38,6 +39,16 @@ def get_char():
         return None
 
 
+class Key(Enum):
+    Enter = 0
+    Backspace = 1
+    Escape = 2
+    Up = 3
+    Down = 4
+    Right = 5
+    Left = 6
+
+
 def get_key():
     char = get_char()
 
@@ -45,40 +56,40 @@ def get_key():
         return char
 
     if ord(char) in (10, 13):
-        return "ENTER"
+        return Key.Enter
 
     if os.name == "nt":
         if ord(char) == 8:
-            return "BACKSPACE"
+            return Key.Backspace
         if ord(char) == 27:
-            return "ESC"
+            return Key.Escape
         if ord(char) == 72:
-            return "UP"
+            return Key.Up
         if ord(char) == 75:
-            return "LEFT"
+            return Key.Left
         if ord(char) == 77:
-            return "RIGHT"
+            return Key.Right
         if ord(char) == 80:
-            return "DOWN"
+            return Key.Down
     else:
         if ord(char) == 27:
             char = get_char()
             if char is None:
-                return "ESC"
+                return Key.Escape
             if ord(char) == 91:
                 char = get_char()
                 if char == "A":
-                    return "UP"
+                    return Key.Up
                 if char == "B":
-                    return "DOWN"
+                    return Key.Down
                 if char == "C":
-                    return "RIGHT"
+                    return Key.Right
                 if char == "D":
-                    return "LEFT"
+                    return Key.Left
                 return None
             return None
         if ord(char) == 127:
-            return "BACKSPACE"
+            return Key.Backspace
 
     return char
 
@@ -89,7 +100,7 @@ _keys: list[str] = []
 def poll_events():
     key = get_key()
     while key:
-        _keys.append(key)
+        _keys.append(str(key))
         key = get_key()
 
 
@@ -97,8 +108,8 @@ def reset_events():
     _keys.clear()
 
 
-def is_key_pressed(key: str):
-    return key in _keys
+def is_key_pressed(key: str | Key):
+    return str(key) in _keys
 
 
 def get_last_pressed_ley() -> str | None:
