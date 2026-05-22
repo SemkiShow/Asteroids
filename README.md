@@ -92,6 +92,7 @@ Granica świata jest oznaczona czerwonym wypełnieniem.
 Kontakt z polem poza granicą świata lub asteroidą powoduje natychmiastowy [koniec gry](#koniec-gry).  
 [Koniec gry](#koniec-gry) może także być spowodowany brakiem paliwa w statku (Pole `Fuel` w lewym górnym rogu ekranu).  
 Kontakt z polem o wyniku niewiadomym powoduje losowe wydarzenie: zmianę liczby punktów (+ 10-50 lub - 10-30), zmianę licznika czasu (+- 1-3 sekundy) lub dodanie paliwa do statku (+ 100-500).  
+Dotarcie do celu powoduje [zwycięcstwo](#zwycięstwo).  
 
 W oknie turtle są pokazane obecna pozycja gracza oraz położenie celu.  
 
