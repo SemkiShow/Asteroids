@@ -1,7 +1,7 @@
 from camera import camera, Colors
 from input import Key, get_last_pressed_ley, is_key_pressed
 from utils import *
-from enum import Enum
+from enum import Enum, auto
 
 
 def measure_text(text: str):
@@ -13,9 +13,9 @@ def measure_text(text: str):
 
 
 class Align(Enum):
-    Left = 0
-    Center = 1
-    Right = 2
+    Left = auto()
+    Center = auto()
+    Right = auto()
 
 
 def apply_align(pos: Vec2, width: float, align: Align, parent_width: float):
@@ -102,7 +102,7 @@ class Window:
         active: bool,
         idle_color: str = Colors.RESET,
         selected_color: str = Colors.INVERTED,
-        active_color: str = Colors.BG_CYAN,
+        active_color: str = Colors.BG_BLUE,
         align: Align = Align.Left,
         parent_width: float = 0,
     ) -> tuple[int, bool]:
@@ -186,7 +186,7 @@ class Window:
         show_value: bool = True,
         idle_color: str = Colors.RESET,
         selected_color: str = Colors.INVERTED,
-        active_color: str = Colors.BG_CYAN,
+        active_color: str = Colors.BG_BLUE,
         align: Align = Align.Left,
         parent_width: float = 0,
     ) -> tuple[int, bool]:

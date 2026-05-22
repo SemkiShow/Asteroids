@@ -1,7 +1,7 @@
 from camera import camera, Colors
 from utils import *
 import math, random
-from enum import Enum
+from enum import Enum, auto
 
 
 class Player:
@@ -54,11 +54,11 @@ class Asteroid:
 
 
 class FieldType(Enum):
-    AddPoints = 0
-    Time = 1
-    Fuel = 2
-    Speed = 3
-    RemovePoints = 4
+    AddPoints = auto()
+    Time = auto()
+    Fuel = auto()
+    Speed = auto()
+    RemovePoints = auto()
 
 
 class Field:

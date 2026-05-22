@@ -1,6 +1,6 @@
 from camera import camera
 import sys, os
-from enum import Enum
+from enum import Enum, auto
 
 if os.name != "nt":
     import tty, termios
@@ -40,13 +40,13 @@ def get_char():
 
 
 class Key(Enum):
-    Enter = 0
-    Backspace = 1
-    Escape = 2
-    Up = 3
-    Down = 4
-    Right = 5
-    Left = 6
+    Enter = auto()
+    Backspace = auto()
+    Escape = auto()
+    Up = auto()
+    Down = auto()
+    Right = auto()
+    Left = auto()
 
 
 def get_key():
