@@ -85,11 +85,11 @@ class Map:
 
     def restart_game(
         self,
-        width: int = 200,
-        height: int = 200,
-        asteroids_fill: float = 0.1,
-        fields_fill: float = 0.025,
-        min_distance: float = 100,
+        width: int,
+        height: int,
+        asteroids_fill: float,
+        fields_fill: float,
+        min_distance: float,
     ):
         def random_pos():
             return Vec2(random.randint(0, width - 1), random.randint(0, height - 1))

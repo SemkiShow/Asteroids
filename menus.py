@@ -160,6 +160,9 @@ class GameMenu(Window):
             case 2:
                 asteroids_fill = 1.25
                 fields_fill = 0.1
+            case _:
+                notification_menu.show("Error: invalid diffuculty selected")
+                pass
         self.map.restart_game(
             width=settings_menu.map_size_x,
             height=settings_menu.map_size_y,

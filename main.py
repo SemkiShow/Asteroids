@@ -1,4 +1,4 @@
-"""The program entrypoint"""
+"""The program entry point"""
 
 from camera import camera
 from input import *

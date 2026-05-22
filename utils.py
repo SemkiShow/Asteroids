@@ -1,5 +1,6 @@
-"""Utils - vector and rectangle types, mod function"""
+"""Vector and rectangle types, helper functions"""
 
+from typing import Self
 import math
 
 
@@ -8,7 +9,7 @@ class Vec2:
         self.x = x
         self.y = y
 
-    def distance(self, other):
+    def distance(self, other: Self):
         return math.sqrt((self.x - other.x) ** 2 + (self.y - other.y) ** 2)
 
 
@@ -17,10 +18,12 @@ class IntVec2:
         self.x = round(x)
         self.y = round(y)
 
-    def __eq__(self, other):
+    def __eq__(self, other: object):
+        if not isinstance(other, IntVec2):
+            return NotImplemented
         return (self.x == other.x) and (self.y == other.y)
 
-    def distance(self, other):
+    def distance(self, other: Self):
         return math.sqrt((self.x - other.x) ** 2 + (self.y - other.y) ** 2)
 
 
@@ -46,5 +49,17 @@ class Rec:
         return Vec2(self.width, self.height)
 
 
-def mod(a, b):
+def mod(a: float, b: float):
     return ((a % b) + b) % b
+
+
+def clamp(val: int, min_val: int, max_val: int) -> int:
+    return min(max(val, min_val), max_val)
+
+
+def measure_text(text: str):
+    size = Vec2(0, 0)
+    for line in text.split("\n"):
+        size.x = max(size.x, len(line))
+    size.y = text.count("\n") + 1
+    return size

@@ -6,14 +6,6 @@ from utils import *
 from enum import Enum, auto
 
 
-def measure_text(text: str):
-    size = Vec2(0, 0)
-    for line in text.split("\n"):
-        size.x = max(size.x, len(line))
-    size.y = text.count("\n") + 1
-    return size
-
-
 class Align(Enum):
     Left = auto()
     Center = auto()
@@ -28,10 +20,6 @@ def apply_align(pos: Vec2, width: float, align: Align, parent_width: float):
             pos.x = max(pos.x, pos.x + (parent_width - width) / 2)
         case Align.Right:
             pos.x = max(pos.x, pos.x + (parent_width - width))
-
-
-def clamp(val: int, min_val: int, max_val: int) -> int:
-    return min(max(val, min_val), max_val)
 
 
 class Window:
