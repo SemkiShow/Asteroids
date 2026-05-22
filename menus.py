@@ -2,7 +2,7 @@ from input import Key, is_key_pressed
 from game import FieldType, Player, Map, Field
 from tui import *
 from utils import *
-import time, turtle, random, json, os, inspect
+import time, turtle, random, json, os
 
 
 class ExitSuccess(KeyboardInterrupt): ...
@@ -133,10 +133,6 @@ class GameMenu(Window):
         self.player: Player = Player()
         self.map: Map = Map()
 
-        self.dropdown_idx = 0
-        self.dropdown_active = False
-        self.field_text = ""
-
     def set_visible(self, visible: bool):
         if not visible:
             turtle.clearscreen()
@@ -174,6 +170,8 @@ class GameMenu(Window):
         self.player.pos = Vec2(self.map.player_pos.x, self.map.player_pos.y)
         self.points: int = 0
         self.time: float = 0
+        self.frame: int = 0
+        self.fields: int = 0
 
         # Set up the screen
         turtle.tracer(False)
@@ -239,6 +237,7 @@ class GameMenu(Window):
         self.move_turtle()
 
         self.time += camera.get_delta_time()
+        self.frame += 1
 
         # Wall collision game over
         player_pos = self.player.get_draw_pos()
@@ -283,6 +282,7 @@ class GameMenu(Window):
                     points = random.randint(10, 30)
                     self.points -= points
                     notification_menu.show("Picked up debuff: -" + str(points) + " points")
+            self.fields += 1
             self.map.fields.remove(field)
 
         # Target collision victory
@@ -297,8 +297,102 @@ class GameMenu(Window):
         self.label(Vec2(0, 0), "Speed: " + str(round(self.player.speed, 1)), Colors.YELLOW)
         self.label(Vec2(0, 1), "Points: " + str(self.points), Colors.YELLOW)
         self.label(Vec2(0, 2), "Time: " + str(round(self.time, 1)) + "s", Colors.YELLOW)
+        self.label(Vec2(0, 3), "Frame: " + str(self.frame), Colors.YELLOW)
 
         return super().draw()
+
+
+def draw_info(window: Window, rec: Rec):
+    def clamp_text(text: str):
+        return text[: rec.width - 2]
+
+    window.label(
+        rec.get_pos(),
+        clamp_text("Player: " + settings_menu.player_name),
+        Colors.INVERTED,
+        align=Align.Center,
+        parent_width=rec.width,
+    )
+    rec.y += 1
+
+    window.label(
+        rec.get_pos(),
+        clamp_text(
+            "Start pos: "
+            + str(int(game_menu.map.player_pos.x))
+            + " "
+            + str(int(game_menu.map.player_pos.y))
+        ),
+        Colors.INVERTED,
+        align=Align.Center,
+        parent_width=rec.width,
+    )
+    rec.y += 1
+
+    window.label(
+        rec.get_pos(),
+        clamp_text(
+            "End pos: " + str(int(game_menu.player.pos.x)) + " " + str(int(game_menu.player.pos.y))
+        ),
+        Colors.INVERTED,
+        align=Align.Center,
+        parent_width=rec.width,
+    )
+    rec.y += 1
+
+    window.label(
+        rec.get_pos(),
+        clamp_text("Time: " + str(round(game_menu.time, 1)) + "s"),
+        Colors.INVERTED,
+        align=Align.Center,
+        parent_width=rec.width,
+    )
+    rec.y += 1
+
+    window.label(
+        rec.get_pos(),
+        clamp_text("Frames: " + str(game_menu.frame)),
+        Colors.INVERTED,
+        align=Align.Center,
+        parent_width=rec.width,
+    )
+    rec.y += 1
+
+    window.label(
+        rec.get_pos(),
+        clamp_text("End speed: " + str(round(game_menu.player.speed, 1))),
+        Colors.INVERTED,
+        align=Align.Center,
+        parent_width=rec.width,
+    )
+    rec.y += 1
+
+    window.label(
+        rec.get_pos(),
+        clamp_text("Points: " + str(game_menu.points)),
+        Colors.INVERTED,
+        align=Align.Center,
+        parent_width=rec.width,
+    )
+    rec.y += 1
+
+    window.label(
+        rec.get_pos(),
+        clamp_text("Fields: " + str(game_menu.fields) + "/" + str(len(game_menu.map.fields))),
+        Colors.INVERTED,
+        align=Align.Center,
+        parent_width=rec.width,
+    )
+    rec.y += 1
+
+    window.label(
+        rec.get_pos(),
+        clamp_text("Difficulty: " + settings_menu.difficulties[settings_menu.difficulty]),
+        Colors.INVERTED,
+        align=Align.Center,
+        parent_width=rec.width,
+    )
+    rec.y += 1
 
 
 def draw_buttons(window: Window, rec: Rec, show_restart: bool = True):
@@ -384,7 +478,7 @@ class GameOverMenu(Window):
     def draw(self):
         terminal_size = camera.get_terminal_size()
 
-        rec = Rec(terminal_size.x // 2, terminal_size.y // 2, 21, 7)
+        rec = Rec(terminal_size.x // 2, terminal_size.y // 2, 21, 17)
         rec.x -= rec.width // 2
         rec.y -= rec.height // 2
 
@@ -396,7 +490,11 @@ class GameOverMenu(Window):
         )
         rec.y += 2
 
+        draw_info(self, rec)
+        rec.y += 1
+
         draw_buttons(self, rec)
+        rec.y += 1
 
         return super().draw()
 
@@ -408,7 +506,7 @@ class VictoryMenu(Window):
     def draw(self):
         terminal_size = camera.get_terminal_size()
 
-        rec = Rec(terminal_size.x // 2, terminal_size.y // 2, 21, 6)
+        rec = Rec(terminal_size.x // 2, terminal_size.y // 2, 21, 16)
         rec.x -= rec.width // 2
         rec.y -= rec.height // 2
 
@@ -420,7 +518,11 @@ class VictoryMenu(Window):
         )
         rec.y += 2
 
+        draw_info(self, rec)
+        rec.y += 1
+
         draw_buttons(self, rec, False)
+        rec.y += 1
 
         return super().draw()
 
