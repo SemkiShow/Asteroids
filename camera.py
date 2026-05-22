@@ -26,7 +26,11 @@ class Colors:
     BG_WHITE: str = "\x1b[47m"
     BG_DEFAULT: str = "\x1b[49m"
 
-    INVERTED: str = BG_WHITE + BLACK
+    BOLD: str = "\x1b[1m"
+    ITALIC: str = "\x1b[3m"
+    UNDERLINE: str = "\x1b[4m"
+    BLINKING: str = "\x1b[5m"
+    INVERTED: str = "\x1b[7m"
 
 
 class Camera:
@@ -95,7 +99,7 @@ class Camera:
     def draw_rec(
         self,
         rec: Rec,
-        color: str = Colors.BG_WHITE,
+        color: str = Colors.INVERTED,
         world_pos: bool = True,
     ):
         draw_pos = self.get_draw_pos(rec.get_pos(), world_pos)

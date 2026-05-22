@@ -28,6 +28,10 @@ def apply_align(pos: Vec2, width: float, align: Align, parent_width: float):
             pos.x = max(pos.x, pos.x + (parent_width - width))
 
 
+def clamp(val: int, min_val: int, max_val: int) -> int:
+    return min(max(val, min_val), max_val)
+
+
 class Window:
     def __init__(self):
         self.active = False
@@ -153,11 +157,11 @@ class Window:
 
         selected = self.selected(idx)
 
-        draw_text = text + "_" * max(0, width - len(text))
+        draw_text = text + " " * max(0, width - len(text))
         camera.draw_text(
             new_pos,
             draw_text[-width:],
-            selected_color if selected else idle_color,
+            (selected_color if selected else idle_color) + Colors.UNDERLINE,
             world_pos=False,
         )
 
@@ -166,10 +170,68 @@ class Window:
             if key:
                 if len(key) == 1 and key.isalnum():
                     text += key
-                elif key == Key.Backspace:
-                    text = text[:-1]
+            if is_key_pressed(Key.Backspace):
+                text = text[:-1]
 
         return text
+
+    def slider(
+        self,
+        pos: Vec2,
+        val: int,
+        min_val: int,
+        max_val: int,
+        active: bool,
+        width: int = 20,
+        show_value: bool = True,
+        idle_color: str = Colors.RESET,
+        selected_color: str = Colors.INVERTED,
+        active_color: str = Colors.BG_CYAN,
+        align: Align = Align.Left,
+        parent_width: float = 0,
+    ) -> tuple[int, bool]:
+        idx = self._total_widgets
+        self._total_widgets += 1
+
+        new_pos = Vec2(pos.x, pos.y)
+        apply_align(new_pos, width, align, parent_width)
+
+        selected = self.selected(idx)
+        if active:
+            self.active = False
+
+        text = list("-" * width)
+        handle_pos = round((val - min_val) / (max_val - min_val) * width)
+        text[clamp(handle_pos, 0, width - 1)] = "+"
+        text = "".join(text)
+
+        color = idle_color
+        if selected:
+            color = selected_color
+        if active:
+            color = active_color
+        camera.draw_text(new_pos, text, color, world_pos=False)
+
+        if show_value:
+            new_pos.x += width + 1
+            camera.draw_text(new_pos, str(val), idle_color, world_pos=False)
+
+        if selected:
+            if is_key_pressed(Key.Enter):
+                active = not active
+
+            if active:
+                delta = math.ceil((max_val - min_val) / width)
+                if is_key_pressed(Key.Left):
+                    val -= delta
+                if is_key_pressed(Key.Right):
+                    val += delta
+                if val < min_val:
+                    val = min_val
+                if val > max_val:
+                    val = max_val
+
+        return (val, active)
 
     def update(self):
         pass

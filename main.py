@@ -10,6 +10,7 @@ if __name__ == "__main__":
 
     app: Application = Application()
     app.add_window(main_menu)
+    app.add_window(settings_menu)
     app.add_window(game_menu)
     app.add_window(pause_menu)
     app.add_window(game_over_menu)
@@ -38,3 +39,4 @@ if __name__ == "__main__":
         print("\x1b[J", end="")
     finally:
         restore_terminal()
+        settings_menu.save()

@@ -2,7 +2,7 @@ from input import Key, is_key_pressed
 from game import FieldType, Player, Map, Field
 from tui import *
 from utils import *
-import time, turtle, random
+import time, turtle, random, json, os, inspect
 
 
 class ExitSuccess(KeyboardInterrupt): ...
@@ -24,7 +24,7 @@ class MainMenu(Window):
 /_/   \_\___/\__\___|_|  \___/|_|\__,_|___/"""
         title = title[1:]  # Remove the first newline
 
-        self.label(pos, title, align=Align.Center, parent_width=terminal_size.x)
+        self.label(pos, title, Colors.BOLD, align=Align.Center, parent_width=terminal_size.x)
         pos.y += measure_text(title).y + 2
 
         if self.button(pos, "Play", align=Align.Center, parent_width=terminal_size.x):
@@ -34,8 +34,93 @@ class MainMenu(Window):
             self.set_visible(False)
         pos.y += 2
 
+        if self.button(pos, "Settings", align=Align.Center, parent_width=terminal_size.x):
+            settings_menu.set_visible(True)
+            self.set_visible(False)
+        pos.y += 2
+
         if self.button(pos, "Exit", align=Align.Center, parent_width=terminal_size.x):
             raise ExitSuccess
+        pos.y += 2
+
+        return super().draw()
+
+
+class SettingsMenu(Window):
+    def __init__(self):
+        super().__init__()
+
+        parent_vars = set(self.__dict__.keys())
+
+        self.player_name: str = "Player"
+        self.difficulty: int = 0
+        self.map_size_x: int = 200
+        self.map_size_y: int = 200
+
+        self._settings_keys = [k for k in self.__dict__.keys() if k not in parent_vars]
+
+        self.settings_path: str = "settings.json"
+        self.difficulties: list[str] = ["Easy", "Medium", "Hard"]
+        self.difficulty_active: bool = False
+        self.min_map_size: int = 50
+        self.max_map_size: int = 500
+        self.map_size_x_active: bool = False
+        self.map_size_y_active: bool = False
+
+        self.load()
+
+    def load(self):
+        if not os.path.exists(self.settings_path):
+            self.save()
+            return
+        with open(self.settings_path, "r") as file:
+            data = json.load(file)
+            filtered_data = {k: v for k, v in data.items() if k in self._settings_keys}
+            for key, value in filtered_data.items():
+                setattr(self, key, value)
+
+    def save(self):
+        with open(self.settings_path, "w") as file:
+            data = {k: self.__dict__[k] for k in self._settings_keys}
+            json.dump(data, file)
+
+    def draw(self):
+        pos: Vec2 = Vec2(0, 0)
+        text_width = 15
+
+        if self.button(pos, "Back"):
+            main_menu.set_visible(True)
+            self.set_visible(False)
+        pos.y += 2
+
+        self.label(pos, "Player name")
+        pos.x += text_width
+        self.player_name = self.input_field(pos, self.player_name)
+        pos.x -= text_width
+        pos.y += 2
+
+        self.label(pos, "Difficulty")
+        pos.x += text_width
+        self.difficulty, self.difficulty_active = self.dropdown(
+            pos, self.difficulties, self.difficulty, self.difficulty_active
+        )
+        pos.x -= text_width
+        pos.y += 2
+
+        self.label(pos, "Map size X")
+        pos.x += text_width
+        self.map_size_x, self.map_size_x_active = self.slider(
+            pos, self.map_size_x, self.min_map_size, self.max_map_size, self.map_size_x_active
+        )
+        pos.x -= text_width
+        pos.y += 2
+
+        self.label(pos, "Map size Y")
+        pos.x += text_width
+        self.map_size_y, self.map_size_y_active = self.slider(
+            pos, self.map_size_y, self.min_map_size, self.max_map_size, self.map_size_y_active
+        )
+        pos.x -= text_width
         pos.y += 2
 
         return super().draw()
@@ -64,7 +149,27 @@ class GameMenu(Window):
         )
 
     def restart_game(self):
-        self.map.restart_game()
+        # Configure map
+        asteroids_fill: float = 0.1
+        fields_fill: float = 0.025
+        match settings_menu.difficulty:
+            case 0:
+                asteroids_fill = 0.1
+                fields_fill = 0.025
+            case 1:
+                asteroids_fill = 0.5
+                fields_fill = 0.05
+            case 2:
+                asteroids_fill = 1.25
+                fields_fill = 0.1
+        self.map.restart_game(
+            width=settings_menu.map_size_x,
+            height=settings_menu.map_size_y,
+            asteroids_fill=asteroids_fill,
+            fields_fill=fields_fill,
+            min_distance=min(settings_menu.map_size_x, settings_menu.map_size_y) / 2,
+        )
+
         self.player.restart_game()
         self.player.pos = Vec2(self.map.player_pos.x, self.map.player_pos.y)
         self.points: int = 0
@@ -196,6 +301,47 @@ class GameMenu(Window):
         return super().draw()
 
 
+def draw_buttons(window: Window, rec: Rec, show_restart: bool = True):
+    if show_restart:
+        if window.button(
+            rec.get_pos(),
+            "Restart",
+            idle_color=Colors.INVERTED,
+            selected_color=Colors.RESET,
+            align=Align.Center,
+            parent_width=rec.width,
+        ):
+            game_menu.restart_game()
+            window.set_visible(False)
+        rec.y += 1
+
+    if window.button(
+        rec.get_pos(),
+        "New game",
+        idle_color=Colors.INVERTED,
+        selected_color=Colors.RESET,
+        align=Align.Center,
+        parent_width=rec.width,
+    ):
+        game_menu.map.set_random_seed()
+        game_menu.restart_game()
+        window.set_visible(False)
+    rec.y += 1
+
+    if window.button(
+        rec.get_pos(),
+        "Return to main menu",
+        idle_color=Colors.INVERTED,
+        selected_color=Colors.RESET,
+        align=Align.Center,
+        parent_width=rec.width,
+    ):
+        game_menu.set_visible(False)
+        main_menu.set_visible(True)
+        window.set_visible(False)
+    rec.y += 1
+
+
 class PauseMenu(Window):
     def __init__(self):
         super().__init__()
@@ -207,7 +353,7 @@ class PauseMenu(Window):
         rec.x -= rec.width // 2
         rec.y -= rec.height // 2
 
-        camera.draw_rec(rec, world_pos=False)
+        camera.draw_rec(rec, Colors.INVERTED, world_pos=False)
         rec.y += 1
 
         self.label(
@@ -226,43 +372,7 @@ class PauseMenu(Window):
             self.set_visible(False)
         rec.y += 1
 
-        if self.button(
-            rec.get_pos(),
-            "Restart",
-            idle_color=Colors.INVERTED,
-            selected_color=Colors.RESET,
-            align=Align.Center,
-            parent_width=rec.width,
-        ):
-            game_menu.restart_game()
-            self.set_visible(False)
-        rec.y += 1
-
-        if self.button(
-            rec.get_pos(),
-            "New game",
-            idle_color=Colors.INVERTED,
-            selected_color=Colors.RESET,
-            align=Align.Center,
-            parent_width=rec.width,
-        ):
-            game_menu.map.set_random_seed()
-            game_menu.restart_game()
-            self.set_visible(False)
-        rec.y += 1
-
-        if self.button(
-            rec.get_pos(),
-            "Return to main menu",
-            idle_color=Colors.INVERTED,
-            selected_color=Colors.RESET,
-            align=Align.Center,
-            parent_width=rec.width,
-        ):
-            game_menu.set_visible(False)
-            main_menu.set_visible(True)
-            self.set_visible(False)
-        rec.y += 1
+        draw_buttons(self, rec)
 
         return super().draw()
 
@@ -286,43 +396,7 @@ class GameOverMenu(Window):
         )
         rec.y += 2
 
-        if self.button(
-            rec.get_pos(),
-            "Restart",
-            idle_color=Colors.INVERTED,
-            selected_color=Colors.RESET,
-            align=Align.Center,
-            parent_width=rec.width,
-        ):
-            game_menu.restart_game()
-            self.set_visible(False)
-        rec.y += 1
-
-        if self.button(
-            rec.get_pos(),
-            "New game",
-            idle_color=Colors.INVERTED,
-            selected_color=Colors.RESET,
-            align=Align.Center,
-            parent_width=rec.width,
-        ):
-            game_menu.map.set_random_seed()
-            game_menu.restart_game()
-            self.set_visible(False)
-        rec.y += 1
-
-        if self.button(
-            rec.get_pos(),
-            "Return to main menu",
-            idle_color=Colors.INVERTED,
-            selected_color=Colors.RESET,
-            align=Align.Center,
-            parent_width=rec.width,
-        ):
-            game_menu.set_visible(False)
-            main_menu.set_visible(True)
-            self.set_visible(False)
-        rec.y += 1
+        draw_buttons(self, rec)
 
         return super().draw()
 
@@ -346,31 +420,7 @@ class VictoryMenu(Window):
         )
         rec.y += 2
 
-        if self.button(
-            rec.get_pos(),
-            "New game",
-            idle_color=Colors.INVERTED,
-            selected_color=Colors.RESET,
-            align=Align.Center,
-            parent_width=rec.width,
-        ):
-            game_menu.map.set_random_seed()
-            game_menu.restart_game()
-            self.set_visible(False)
-        rec.y += 1
-
-        if self.button(
-            rec.get_pos(),
-            "Return to main menu",
-            idle_color=Colors.INVERTED,
-            selected_color=Colors.RESET,
-            align=Align.Center,
-            parent_width=rec.width,
-        ):
-            game_menu.set_visible(False)
-            main_menu.set_visible(True)
-            self.set_visible(False)
-        rec.y += 1
+        draw_buttons(self, rec, False)
 
         return super().draw()
 
@@ -407,6 +457,7 @@ class NotificationMenu(Window):
 
 
 main_menu = MainMenu()
+settings_menu = SettingsMenu()
 game_menu = GameMenu()
 pause_menu = PauseMenu()
 game_over_menu = GameOverMenu()
