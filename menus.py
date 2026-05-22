@@ -334,6 +334,17 @@ def draw_info(window: Window, rec: Rec):
     window.label(
         rec.get_pos(),
         clamp_text(
+            "Map size: " + str(settings_menu.map_size_x) + " " + str(settings_menu.map_size_y)
+        ),
+        Colors.INVERTED,
+        align=Align.Center,
+        parent_width=rec.width,
+    )
+    rec.y += 1
+
+    window.label(
+        rec.get_pos(),
+        clamp_text(
             "Start pos: "
             + str(int(game_menu.map.player_pos.x))
             + " "
@@ -503,7 +514,7 @@ class GameOverMenu(Window):
     def draw(self):
         terminal_size = camera.get_terminal_size()
 
-        rec = Rec(terminal_size.x // 2, terminal_size.y // 2, 21, 18)
+        rec = Rec(terminal_size.x // 2, terminal_size.y // 2, 21, 19)
         rec.x -= rec.width // 2
         rec.y -= rec.height // 2
 
@@ -531,7 +542,7 @@ class VictoryMenu(Window):
     def draw(self):
         terminal_size = camera.get_terminal_size()
 
-        rec = Rec(terminal_size.x // 2, terminal_size.y // 2, 21, 17)
+        rec = Rec(terminal_size.x // 2, terminal_size.y // 2, 21, 18)
         rec.x -= rec.width // 2
         rec.y -= rec.height // 2
 
