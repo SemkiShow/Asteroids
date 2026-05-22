@@ -16,7 +16,7 @@ class MainMenu(Window):
         pos = Vec2(0, 0)
         terminal_size = camera.get_terminal_size()
 
-        title = r"""
+        title = R"""
     _        _                 _     _     
    / \   ___| |_ ___ _ __ ___ (_) __| |___ 
   / _ \ / __| __/ _ \ '__/ _ \| |/ _` / __|
@@ -209,7 +209,6 @@ class GameMenu(Window):
 
     def game_over(self):
         self.player.speed = 0
-        notification_menu.show("Game Over!")
         game_over_menu.set_visible(True)
 
     def victory(self):
@@ -247,6 +246,7 @@ class GameMenu(Window):
             or player_pos.y < 0
             or player_pos.y >= self.map.size.y
         ):
+            notification_menu.show("You went out of bounds!")
             self.game_over()
             return
 
@@ -255,8 +255,15 @@ class GameMenu(Window):
         for asteroid in self.map.asteroids:
             asteroid_pos = camera.get_draw_pos(asteroid.pos)
             if asteroid_pos == player_pos:
+                notification_menu.show("You hit an asteroid!")
                 self.game_over()
                 return
+
+        # Fuel game over
+        if self.player.fuel < 0:
+            notification_menu.show("You ran out of fuel!")
+            self.game_over()
+            return
 
         # Field collision handling
         collected_fields: list[Field] = []
@@ -274,6 +281,10 @@ class GameMenu(Window):
                     seconds = random.randint(10, 30) / 10
                     self.time -= seconds
                     notification_menu.show("Picked up bonus: -" + str(seconds) + "s")
+                case FieldType.Fuel:
+                    fuel = random.randint(100, 500)
+                    self.player.fuel += fuel
+                    notification_menu.show("Picked up bonus: +" + str(fuel) + " fuel")
                 case FieldType.Speed:
                     speed = random.randint(10, 30) / 10
                     self.player.speed += speed
@@ -295,9 +306,10 @@ class GameMenu(Window):
         self.player.draw()
 
         self.label(Vec2(0, 0), "Speed: " + str(round(self.player.speed, 1)), Colors.YELLOW)
-        self.label(Vec2(0, 1), "Points: " + str(self.points), Colors.YELLOW)
-        self.label(Vec2(0, 2), "Time: " + str(round(self.time, 1)) + "s", Colors.YELLOW)
-        self.label(Vec2(0, 3), "Frame: " + str(self.frame), Colors.YELLOW)
+        self.label(Vec2(0, 1), "Fuel: " + str(round(self.player.fuel, 1)), Colors.YELLOW)
+        self.label(Vec2(0, 2), "Points: " + str(self.points), Colors.YELLOW)
+        self.label(Vec2(0, 3), "Time: " + str(round(self.time, 1)) + "s", Colors.YELLOW)
+        self.label(Vec2(0, 4), "Frame: " + str(self.frame), Colors.YELLOW)
 
         return super().draw()
 
@@ -361,6 +373,15 @@ def draw_info(window: Window, rec: Rec):
     window.label(
         rec.get_pos(),
         clamp_text("End speed: " + str(round(game_menu.player.speed, 1))),
+        Colors.INVERTED,
+        align=Align.Center,
+        parent_width=rec.width,
+    )
+    rec.y += 1
+
+    window.label(
+        rec.get_pos(),
+        clamp_text("Fuel: " + str(round(game_menu.player.fuel, 1))),
         Colors.INVERTED,
         align=Align.Center,
         parent_width=rec.width,
@@ -478,7 +499,7 @@ class GameOverMenu(Window):
     def draw(self):
         terminal_size = camera.get_terminal_size()
 
-        rec = Rec(terminal_size.x // 2, terminal_size.y // 2, 21, 17)
+        rec = Rec(terminal_size.x // 2, terminal_size.y // 2, 21, 18)
         rec.x -= rec.width // 2
         rec.y -= rec.height // 2
 
@@ -506,7 +527,7 @@ class VictoryMenu(Window):
     def draw(self):
         terminal_size = camera.get_terminal_size()
 
-        rec = Rec(terminal_size.x // 2, terminal_size.y // 2, 21, 16)
+        rec = Rec(terminal_size.x // 2, terminal_size.y // 2, 21, 17)
         rec.x -= rec.width // 2
         rec.y -= rec.height // 2
 

@@ -20,6 +20,7 @@ class Player:
         self.pos = Vec2(0, 0)
         self.speed = 0
         self.angle = 0
+        self.fuel: float = 1000
 
     def update(self):
         self.translate(
@@ -29,6 +30,9 @@ class Player:
 
         self.speed -= self.friction * camera.get_delta_time()
         self.speed = max(0, self.speed)
+
+        self.fuel -= self.speed
+        self.fuel = max(0, self.fuel)
 
         # Set camera position so the player is in the center of the screen
         terminal_size = camera.get_terminal_size()
@@ -52,8 +56,9 @@ class Asteroid:
 class FieldType(Enum):
     AddPoints = 0
     Time = 1
-    Speed = 2
-    RemovePoints = 3
+    Fuel = 2
+    Speed = 3
+    RemovePoints = 4
 
 
 class Field:
