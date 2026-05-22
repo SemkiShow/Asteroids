@@ -1,3 +1,5 @@
+"""Map generation and drawing, the player class"""
+
 from camera import camera, Colors
 from utils import *
 import math, random

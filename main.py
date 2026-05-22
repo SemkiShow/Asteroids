@@ -1,3 +1,5 @@
+"""The program entrypoint"""
+
 from camera import camera
 from input import *
 from menus import *

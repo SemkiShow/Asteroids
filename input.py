@@ -1,3 +1,5 @@
+"""Cross-platform non-blocking input handling"""
+
 from camera import camera
 import sys, os
 from enum import Enum, auto
@@ -112,5 +114,5 @@ def is_key_pressed(key: str | Key):
     return str(key) in _keys
 
 
-def get_last_pressed_ley() -> str | None:
+def get_last_pressed_key() -> str | None:
     return None if len(_keys) == 0 else _keys[-1]

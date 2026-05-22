@@ -1,5 +1,7 @@
+"""An immediate mode TUI library"""
+
 from camera import camera, Colors
-from input import Key, get_last_pressed_ley, is_key_pressed
+from input import Key, get_last_pressed_key, is_key_pressed
 from utils import *
 from enum import Enum, auto
 
@@ -166,7 +168,7 @@ class Window:
         )
 
         if selected:
-            key = get_last_pressed_ley()
+            key = get_last_pressed_key()
             if key:
                 if len(key) == 1 and key.isalnum():
                     text += key

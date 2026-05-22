@@ -1,3 +1,5 @@
+"""Use camera to draw on the screen"""
+
 from utils import *
 import os, time
 

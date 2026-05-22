@@ -1,3 +1,5 @@
+"""Menus and game update"""
+
 from input import Key, is_key_pressed
 from game import FieldType, Player, Map, Field
 from tui import *

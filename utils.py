@@ -1,3 +1,5 @@
+"""Utils - vector and rectangle types, mod function"""
+
 import math
 
 
