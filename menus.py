@@ -21,11 +21,11 @@ class MainMenu(Window):
    / \   ___| |_ ___ _ __ ___ (_) __| |___ 
   / _ \ / __| __/ _ \ '__/ _ \| |/ _` / __|
  / ___ \\__ \ ||  __/ | | (_) | | (_| \__ \
-/_/   \_\___/\__\___|_|  \___/|_|\__,_|___/
-                                           """
+/_/   \_\___/\__\___|_|  \___/|_|\__,_|___/"""
         title = title[1:]  # Remove the first newline
+
         self.label(pos, title, align=Align.Center, parent_width=terminal_size.x)
-        pos.y += measure_text(title).y
+        pos.y += measure_text(title).y + 2
 
         if self.button(pos, "Play", align=Align.Center, parent_width=terminal_size.x):
             game_menu.map.set_random_seed()
@@ -52,6 +52,11 @@ class GameMenu(Window):
         self.dropdown_active = False
         self.field_text = ""
 
+    def set_visible(self, visible: bool):
+        if not visible:
+            turtle.clearscreen()
+        return super().set_visible(visible)
+
     def map_to_turtle(self, pos: Vec2) -> Vec2:
         return Vec2(
             (pos.x - self.map.size.x / 2),
@@ -74,17 +79,17 @@ class GameMenu(Window):
 
         # Draw goal
         turtle_end_pos = self.map_to_turtle(self.map.end_pos)
-        end_pos_size = 20
+        end_pos_size = 10
         turtle.color("green")
         turtle.width(3)
         turtle.penup()
-        turtle.goto(turtle_end_pos.x, turtle_end_pos.y)
+        turtle.goto(turtle_end_pos.x - end_pos_size / 2, turtle_end_pos.y + end_pos_size / 2)
         turtle.pendown()
         turtle.goto(turtle_end_pos.x + end_pos_size / 2, turtle_end_pos.y - end_pos_size / 2)
         turtle.penup()
-        turtle.goto(turtle_end_pos.x + end_pos_size / 2, turtle_end_pos.y)
+        turtle.goto(turtle_end_pos.x + end_pos_size / 2, turtle_end_pos.y + end_pos_size / 2)
         turtle.pendown()
-        turtle.goto(turtle_end_pos.x, turtle_end_pos.y - end_pos_size / 2)
+        turtle.goto(turtle_end_pos.x - end_pos_size / 2, turtle_end_pos.y - end_pos_size / 2)
         turtle.color("black")
         turtle.width(1)
 
@@ -128,9 +133,9 @@ class GameMenu(Window):
         self.player.update()
         self.move_turtle()
 
-        self.points += math.floor(self.player.speed)
         self.time += camera.get_delta_time()
 
+        # Wall collision game over
         player_pos = self.player.get_draw_pos()
         if (
             player_pos.x < 0
@@ -141,6 +146,7 @@ class GameMenu(Window):
             self.game_over()
             return
 
+        # Asteroid collision game over
         player_pos = camera.get_draw_pos(self.player.get_draw_pos())
         for asteroid in self.map.asteroids:
             asteroid_pos = camera.get_draw_pos(asteroid.pos)
@@ -148,6 +154,7 @@ class GameMenu(Window):
                 self.game_over()
                 return
 
+        # Field collision handling
         collected_fields: list[Field] = []
         for field in self.map.fields:
             field_pos = camera.get_draw_pos(field.pos)
@@ -156,7 +163,7 @@ class GameMenu(Window):
         for field in collected_fields[::-1]:
             match field.type:
                 case FieldType.AddPoints:
-                    points = random.randint(20, 50)
+                    points = random.randint(10, 50)
                     self.points += points
                     notification_menu.show("Picked up bonus: +" + str(points) + " points")
                 case FieldType.Time:
@@ -168,11 +175,12 @@ class GameMenu(Window):
                     self.player.speed += speed
                     notification_menu.show("Picked up debuff: +" + str(speed) + " speed")
                 case FieldType.RemovePoints:
-                    points = random.randint(20, 50)
+                    points = random.randint(10, 30)
                     self.points -= points
                     notification_menu.show("Picked up debuff: -" + str(points) + " points")
             self.map.fields.remove(field)
 
+        # Target collision victory
         if player_pos == camera.get_draw_pos(self.map.end_pos):
             self.victory()
             return
