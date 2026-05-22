@@ -260,7 +260,7 @@ class GameMenu(Window):
                 return
 
         # Fuel game over
-        if self.player.fuel < 0:
+        if self.player.fuel <= 0:
             notification_menu.show("You ran out of fuel!")
             self.game_over()
             return
@@ -305,11 +305,15 @@ class GameMenu(Window):
         self.map.draw()
         self.player.draw()
 
-        self.label(Vec2(0, 0), "Speed: " + str(round(self.player.speed, 1)), Colors.YELLOW)
-        self.label(Vec2(0, 1), "Fuel: " + str(round(self.player.fuel, 1)), Colors.YELLOW)
-        self.label(Vec2(0, 2), "Points: " + str(self.points), Colors.YELLOW)
-        self.label(Vec2(0, 3), "Time: " + str(round(self.time, 1)) + "s", Colors.YELLOW)
-        self.label(Vec2(0, 4), "Frame: " + str(self.frame), Colors.YELLOW)
+        pos_text = str(round(self.player.pos.x, 1)) + " " + str(round(self.player.pos.y, 1))
+
+        self.label(Vec2(0, 0), "Player: " + settings_menu.player_name, Colors.YELLOW)
+        self.label(Vec2(0, 1), "Position: " + pos_text, Colors.YELLOW)
+        self.label(Vec2(0, 2), "Speed: " + str(round(self.player.speed, 1)), Colors.YELLOW)
+        self.label(Vec2(0, 3), "Fuel: " + str(round(self.player.fuel, 1)), Colors.YELLOW)
+        self.label(Vec2(0, 4), "Points: " + str(self.points), Colors.YELLOW)
+        self.label(Vec2(0, 5), "Time: " + str(round(self.time, 1)) + "s", Colors.YELLOW)
+        self.label(Vec2(0, 6), "Frame: " + str(self.frame), Colors.YELLOW)
 
         return super().draw()
 
