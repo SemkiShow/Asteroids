@@ -28,7 +28,7 @@ Jesteś statkiem kosmicznym. Twoim celem jest dotarcie do celu, unikając astero
 
 Aby wybrać widżet (przycisk, pole tekstowe, itp.), należy użyć klawisz starzałek. Wybrany widżet będzie wyodrębniony kolorem.  
 Aby kliknąć przycisk należy nacisnąć klawisz Enter.  
-Aby zmienić wybrany element w liście rozwijanej lub zmienić wartość suwaka należy nacisnąć Enter. Wtedy widżet podświeci się niebieskim kolorem. Aby powrócić do wyboru widżetów należy nacisnąć Enter jeszcze raz.
+Aby zmienić wybrany element w liście rozwijanej lub zmienić wartość suwaka należy nacisnąć Enter. Wtedy widżet podświeci się niebieskim kolorem. Aby zmienić wartość należy użyć klawisz strzałek (w górę/dół w liście rozwijalnej i w lewo/prawo w suwaku). Aby powrócić do wyboru widżetów należy nacisnąć Enter jeszcze raz.
 
 ### Menu główne
 
