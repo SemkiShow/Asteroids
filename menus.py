@@ -59,6 +59,8 @@ class SettingsMenu(Window):
         self.map_size_x: int = 200
         self.map_size_y: int = 200
         self.start_fuel: int = 1000
+        self.start_x: int = 100
+        self.start_y: int = 100
 
         self._settings_keys = [k for k in self.__dict__.keys() if k not in parent_vars]
 
@@ -88,7 +90,7 @@ class SettingsMenu(Window):
 
     def draw(self):
         pos: Vec2 = Vec2(0, 0)
-        text_width = 15
+        text_width = 20
 
         if self.button(pos, "Back"):
             main_menu.set_visible(True)
@@ -122,6 +124,18 @@ class SettingsMenu(Window):
         self.label(pos, "Start fuel")
         pos.x += text_width
         self.start_fuel = self.slider(pos, self.start_fuel, self.min_fuel, self.max_fuel)
+        pos.x -= text_width
+        pos.y += 2
+
+        self.label(pos, "Start X (preferred)")
+        pos.x += text_width
+        self.start_x = self.slider(pos, self.start_x, 0, self.map_size_x - 1)
+        pos.x -= text_width
+        pos.y += 2
+
+        self.label(pos, "Start Y (preferred)")
+        pos.x += text_width
+        self.start_y = self.slider(pos, self.start_y, 0, self.map_size_y - 1)
         pos.x -= text_width
         pos.y += 2
 
@@ -164,6 +178,7 @@ class GameMenu(Window):
                 notification_menu.show("Error: invalid diffuculty selected")
                 pass
         self.map.restart_game(
+            start_pos=Vec2(settings_menu.start_x, settings_menu.start_y),
             width=settings_menu.map_size_x,
             height=settings_menu.map_size_y,
             asteroids_fill=asteroids_fill,
@@ -171,9 +186,8 @@ class GameMenu(Window):
             min_distance=min(settings_menu.map_size_x, settings_menu.map_size_y) / 2,
         )
 
-        self.player.restart_game()
+        self.player.restart_game(settings_menu.start_fuel)
         self.player.pos = Vec2(self.map.player_pos.x, self.map.player_pos.y)
-        self.player.fuel = settings_menu.start_fuel
         self.points: int = 0
         self.time: float = 0
         self.frame: int = 0
@@ -303,7 +317,9 @@ class GameMenu(Window):
         self.map.draw()
         self.player.draw()
 
-        pos_text = str(round(self.player.pos.x, 1)) + " " + str(round(self.player.pos.y, 1))
+        pos_text = (
+            str(round(self.player.pos.x, 1)) + " " + str(round(self.player.pos.y / camera.ratio, 1))
+        )
 
         self.label(Vec2(0, 0), "Player: " + settings_menu.player_name, Colors.YELLOW)
         self.label(Vec2(0, 1), "Position: " + pos_text, Colors.YELLOW)

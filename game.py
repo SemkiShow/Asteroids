@@ -18,11 +18,11 @@ class Player:
         self.pos.x += x
         self.pos.y += y
 
-    def restart_game(self):
+    def restart_game(self, fuel: float):
         self.pos = Vec2(0, 0)
         self.speed = 0
         self.angle = 0
-        self.fuel: float = 1000
+        self.fuel: float = fuel
 
     def update(self):
         self.translate(
@@ -85,6 +85,7 @@ class Map:
 
     def restart_game(
         self,
+        start_pos: Vec2,
         width: int,
         height: int,
         asteroids_fill: float,
@@ -118,7 +119,7 @@ class Map:
                     level[y][x] = True
 
         player = Player()
-        player.pos = random_pos()
+        player.pos = Vec2(start_pos.x, start_pos.y * camera.ratio)
         player_pos = player.get_draw_pos()
         while level[int(player_pos.y)][int(player_pos.x)]:
             player.pos = random_pos()

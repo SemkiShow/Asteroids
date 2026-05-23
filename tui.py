@@ -227,10 +227,11 @@ class Window:
                     val -= delta
                 if is_key_pressed(Key.Right):
                     val += delta
-                if val < min_val:
-                    val = min_val
-                if val > max_val:
-                    val = max_val
+
+        if val < min_val:
+            val = min_val
+        if val > max_val:
+            val = max_val
 
         return val
 

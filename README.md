@@ -56,16 +56,22 @@ Wciśnięcie przycisku `Play` powoduje uruchomienie [gry](#menu-gry).
 ```text
 Back                                                 
                                                      
-Player name    Player                                
+Player name         Player                           
                                                      
-Difficulty     Easy                                  
+Difficulty          Easy                             
                                                      
-Map size X     -------+------------ 200              
+Map size X          -------+------------ 200         
                                                      
-Map size Y     -------+------------ 200              
+Map size Y          -------+------------ 200         
+                                                     
+Start fuel          -------+------------ 1000        
+                                                     
+Start X (preferred) ----------+--------- 101         
+                                                     
+Start Y (preferred) ----------+--------- 100         
 ```
 
-W danym menu można zmienić nazwę gracza, poziom trudności gry (Easy, Medium lub Hard) oraz wymiary mapy (50-500).  
+W danym menu można zmienić nazwę gracza, poziom trudności gry (Easy, Medium lub Hard), wymiary mapy (50-500), początkową ilość paliwa (500-2000) oraz preferowaną początkową pozycję (może być zastosowana inna przy generacji świata jeśli wprowadzona wartość doprowadziła by do kolizji po starcie gry).  
 Wciśnięcie przycisku `Back` powoduje powrót do menu głównego.
 
 Ustawienia są zapisywne do pliku `settings.json`.
