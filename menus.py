@@ -318,7 +318,7 @@ def draw_info(window: Window, rec: Rec):
     def clamp_text(text: str):
         return text[: rec.width - 2]
 
-    def draw_text(text: str):
+    def draw_label(text: str):
         window.label(
             rec.get_pos(),
             clamp_text(text),
@@ -333,17 +333,17 @@ def draw_info(window: Window, rec: Rec):
     )
     end_pos_text = str(int(game_menu.player.pos.x)) + " " + str(int(game_menu.player.pos.y))
 
-    draw_text("Player: " + settings_menu.player_name)
-    draw_text("Map size: " + str(settings_menu.map_size_x) + " " + str(settings_menu.map_size_y))
-    draw_text("Start pos: " + start_pos_text)
-    draw_text("End pos: " + end_pos_text)
-    draw_text("Time: " + str(round(game_menu.time, 1)) + "s")
-    draw_text("Frames: " + str(game_menu.frame))
-    draw_text("End speed: " + str(round(game_menu.player.speed, 1)))
-    draw_text("Fuel: " + str(round(game_menu.player.fuel, 1)))
-    draw_text("Points: " + str(game_menu.points))
-    draw_text("Fields: " + str(game_menu.fields) + "/" + str(len(game_menu.map.fields)))
-    draw_text("Difficulty: " + settings_menu.difficulties[settings_menu.difficulty])
+    draw_label("Player: " + settings_menu.player_name)
+    draw_label("Map size: " + str(settings_menu.map_size_x) + " " + str(settings_menu.map_size_y))
+    draw_label("Start pos: " + start_pos_text)
+    draw_label("End pos: " + end_pos_text)
+    draw_label("Time: " + str(round(game_menu.time, 1)) + "s")
+    draw_label("Frames: " + str(game_menu.frame))
+    draw_label("End speed: " + str(round(game_menu.player.speed, 1)))
+    draw_label("Fuel: " + str(round(game_menu.player.fuel, 1)))
+    draw_label("Points: " + str(game_menu.points))
+    draw_label("Fields: " + str(game_menu.fields) + "/" + str(len(game_menu.map.fields)))
+    draw_label("Difficulty: " + settings_menu.difficulties[settings_menu.difficulty])
 
 
 def draw_buttons(window: Window, rec: Rec, show_restart: bool = True):

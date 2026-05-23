@@ -1,4 +1,4 @@
-"""An immediate mode TUI library"""
+"""A simple immediate mode TUI library"""
 
 from camera import camera, Colors
 from input import Key, get_last_pressed_key, is_key_pressed
@@ -169,7 +169,7 @@ class Window:
         if selected:
             key = get_last_pressed_key()
             if key:
-                if len(key) == 1 and key.isalnum():
+                if len(key) == 1 and key.isprintable():
                     text += key
             if is_key_pressed(Key.Backspace):
                 text = text[:-1]
