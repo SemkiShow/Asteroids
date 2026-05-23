@@ -58,6 +58,7 @@ class SettingsMenu(Window):
         self.difficulty: int = 0
         self.map_size_x: int = 200
         self.map_size_y: int = 200
+        self.start_fuel: int = 1000
 
         self._settings_keys = [k for k in self.__dict__.keys() if k not in parent_vars]
 
@@ -65,6 +66,8 @@ class SettingsMenu(Window):
         self.difficulties: list[str] = ["Easy", "Medium", "Hard"]
         self.min_map_size: int = 50
         self.max_map_size: int = 500
+        self.min_fuel: int = 500
+        self.max_fuel: int = 2000
 
         self.load()
 
@@ -116,6 +119,12 @@ class SettingsMenu(Window):
         pos.x -= text_width
         pos.y += 2
 
+        self.label(pos, "Start fuel")
+        pos.x += text_width
+        self.start_fuel = self.slider(pos, self.start_fuel, self.min_fuel, self.max_fuel)
+        pos.x -= text_width
+        pos.y += 2
+
         return super().draw()
 
 
@@ -164,6 +173,7 @@ class GameMenu(Window):
 
         self.player.restart_game()
         self.player.pos = Vec2(self.map.player_pos.x, self.map.player_pos.y)
+        self.player.fuel = settings_menu.start_fuel
         self.points: int = 0
         self.time: float = 0
         self.frame: int = 0
