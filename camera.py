@@ -6,14 +6,11 @@ import os, time
 
 # https://gist.github.com/ConnerWill/d4b6c776b509add763e17f9f113fd25b
 class Colors:
-    RESET: str = "\x1b[0m"
-
     BLACK: str = "\x1b[30m"
     RED: str = "\x1b[31m"
     GREEN: str = "\x1b[32m"
     YELLOW: str = "\x1b[33m"
     BLUE: str = "\x1b[34m"
-    MAGENTA: str = "\x1b[35m"
     CYAN: str = "\x1b[36m"
     WHITE: str = "\x1b[37m"
     DEFAULT: str = "\x1b[39m"
@@ -23,11 +20,11 @@ class Colors:
     BG_GREEN: str = "\x1b[42m"
     BG_YELLOW: str = "\x1b[43m"
     BG_BLUE: str = "\x1b[44m"
-    BG_MAGENTA: str = "\x1b[45m"
     BG_CYAN: str = "\x1b[46m"
     BG_WHITE: str = "\x1b[47m"
     BG_DEFAULT: str = "\x1b[49m"
 
+    RESET: str = "\x1b[0m" + BG_BLACK
     BOLD: str = "\x1b[1m"
     ITALIC: str = "\x1b[3m"
     UNDERLINE: str = "\x1b[4m"

@@ -40,7 +40,7 @@ if __name__ == "__main__":
             time.sleep(0.01)
     except ExitSuccess:
         # Clear the terminal on successful exit
-        print("\x1b[J", end="")
+        print("\x1b[0m\x1b[J", end="")
     finally:
         restore_terminal()
         settings_menu.save()

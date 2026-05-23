@@ -212,11 +212,13 @@ class GameMenu(Window):
         self.time: float = 0
         self.frame: int = 0
         self.fields: int = 0
+        self.turtle_timer: float = time.time()
+        self.turtle_tick_time: float = 0.1
 
         # Set up the screen
-        turtle.tracer(False)
-        turtle.speed("fastest")
-        turtle.Screen().setup(self.map.size.x * 1.25, self.map.size.y / camera.ratio * 1.25)
+        self.screen = turtle.Screen()
+        self.screen.setup(self.map.size.x * 1.25, self.map.size.y / camera.ratio * 1.25)
+        self.screen.tracer(0, math.ceil(1 / self.turtle_tick_time))
         turtle.title("Minimap")
         turtle.clearscreen()
 
@@ -241,11 +243,13 @@ class GameMenu(Window):
         self.move_turtle()
         turtle.pendown()
 
+        self.screen.update()
+
     def move_turtle(self):
         pos = self.map_to_turtle(self.player.pos)
         turtle.goto(pos.x, pos.y)
         turtle.settiltangle(90 - self.player.angle)
-        turtle.update()
+        self.screen.update()
 
     def update(self):
         super().update()
@@ -264,7 +268,10 @@ class GameMenu(Window):
             pause_menu.set_visible(True)
 
         self.player.update()
-        self.move_turtle()
+
+        if time.time() - self.turtle_timer >= self.turtle_tick_time:
+            self.move_turtle()
+            self.turtle_timer = time.time()
 
         self.time += camera.get_delta_time()
         self.frame += 1
@@ -348,6 +355,9 @@ class GameMenu(Window):
         self.label(Vec2(0, 4), "Points: " + str(self.points), Colors.YELLOW)
         self.label(Vec2(0, 5), "Time: " + str(round(self.time, 1)) + "s", Colors.YELLOW)
         self.label(Vec2(0, 6), "Frame: " + str(self.frame), Colors.YELLOW)
+        self.label(
+            Vec2(0, 7), "FPS: " + str(round(self.frame / max(0.1, self.time), 1)), Colors.YELLOW
+        )
 
         return super().draw()
 

@@ -47,7 +47,7 @@ class Player:
     def draw(self):
         angle = mod(self.angle, 360)
         char = self.directions[round(angle / 360 * len(self.directions)) % len(self.directions)]
-        camera.draw_text(self.get_draw_pos(), char, Colors.MAGENTA)
+        camera.draw_text(self.get_draw_pos(), char, Colors.CYAN)
 
 
 class Asteroid:
