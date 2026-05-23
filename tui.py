@@ -28,11 +28,13 @@ class Window:
 
         self._visible = False
         self._selected_idx = 0
+        self._active_idx = -1
         self._total_widgets = 0
 
     def set_visible(self, visible: bool):
         self._visible = visible
         self._selected_idx = 0
+        self._active_idx = -1
         self.reset()
 
     def is_visible(self):
@@ -42,8 +44,17 @@ class Window:
         self.active = False
         self._total_widgets = 0
 
-    def selected(self, idx: int):
+    def is_selected(self, idx: int):
         return idx == self._selected_idx
+
+    def is_active(self, idx: int):
+        return idx == self._active_idx
+
+    def toggle_active(self, idx: int):
+        if self._active_idx == idx:
+            self._active_idx = -1
+        else:
+            self._active_idx = idx
 
     def has_widgets(self):
         return self._total_widgets > 0
@@ -78,31 +89,31 @@ class Window:
         camera.draw_text(
             new_pos,
             text,
-            selected_color if self.selected(idx) else idle_color,
+            selected_color if self.is_selected(idx) else idle_color,
             world_pos=False,
         )
 
-        return self.active and self.selected(idx) and is_key_pressed(Key.Enter)
+        return self.active and self.is_selected(idx) and is_key_pressed(Key.Enter)
 
     def dropdown(
         self,
         pos: Vec2,
         items: list[str],
         item_idx: int,
-        active: bool,
         idle_color: str = Colors.RESET,
         selected_color: str = Colors.INVERTED,
         active_color: str = Colors.BG_BLUE,
         align: Align = Align.Left,
         parent_width: float = 0,
-    ) -> tuple[int, bool]:
+    ) -> int:
         idx = self._total_widgets
         self._total_widgets += 1
 
         new_pos = Vec2(pos.x, pos.y)
         apply_align(new_pos, measure_text(items[item_idx]).x, align, parent_width)
 
-        selected = self.selected(idx)
+        selected = self.is_selected(idx)
+        active = self.is_active(idx)
         if active:
             self.active = False
 
@@ -115,7 +126,7 @@ class Window:
 
         if selected:
             if is_key_pressed(Key.Enter):
-                active = not active
+                self.toggle_active(idx)
 
             if active:
                 if is_key_pressed(Key.Up):
@@ -127,7 +138,7 @@ class Window:
                 if item_idx >= len(items):
                     item_idx = len(items) - 1
 
-        return (item_idx, active)
+        return item_idx
 
     def input_field(
         self,
@@ -145,7 +156,7 @@ class Window:
         new_pos = Vec2(pos.x, pos.y)
         apply_align(new_pos, width, align, parent_width)
 
-        selected = self.selected(idx)
+        selected = self.is_selected(idx)
 
         draw_text = text + " " * max(0, width - len(text))
         camera.draw_text(
@@ -171,7 +182,6 @@ class Window:
         val: int,
         min_val: int,
         max_val: int,
-        active: bool,
         width: int = 20,
         show_value: bool = True,
         idle_color: str = Colors.RESET,
@@ -179,14 +189,15 @@ class Window:
         active_color: str = Colors.BG_BLUE,
         align: Align = Align.Left,
         parent_width: float = 0,
-    ) -> tuple[int, bool]:
+    ) -> int:
         idx = self._total_widgets
         self._total_widgets += 1
 
         new_pos = Vec2(pos.x, pos.y)
         apply_align(new_pos, width, align, parent_width)
 
-        selected = self.selected(idx)
+        selected = self.is_selected(idx)
+        active = self.is_active(idx)
         if active:
             self.active = False
 
@@ -208,7 +219,7 @@ class Window:
 
         if selected:
             if is_key_pressed(Key.Enter):
-                active = not active
+                self.toggle_active(idx)
 
             if active:
                 delta = math.ceil((max_val - min_val) / width)
@@ -221,7 +232,7 @@ class Window:
                 if val > max_val:
                     val = max_val
 
-        return (val, active)
+        return val
 
     def update(self):
         pass

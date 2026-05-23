@@ -63,11 +63,8 @@ class SettingsMenu(Window):
 
         self.settings_path: str = "settings.json"
         self.difficulties: list[str] = ["Easy", "Medium", "Hard"]
-        self.difficulty_active: bool = False
         self.min_map_size: int = 50
         self.max_map_size: int = 500
-        self.map_size_x_active: bool = False
-        self.map_size_y_active: bool = False
 
         self.load()
 
@@ -103,25 +100,19 @@ class SettingsMenu(Window):
 
         self.label(pos, "Difficulty")
         pos.x += text_width
-        self.difficulty, self.difficulty_active = self.dropdown(
-            pos, self.difficulties, self.difficulty, self.difficulty_active
-        )
+        self.difficulty = self.dropdown(pos, self.difficulties, self.difficulty)
         pos.x -= text_width
         pos.y += 2
 
         self.label(pos, "Map size X")
         pos.x += text_width
-        self.map_size_x, self.map_size_x_active = self.slider(
-            pos, self.map_size_x, self.min_map_size, self.max_map_size, self.map_size_x_active
-        )
+        self.map_size_x = self.slider(pos, self.map_size_x, self.min_map_size, self.max_map_size)
         pos.x -= text_width
         pos.y += 2
 
         self.label(pos, "Map size Y")
         pos.x += text_width
-        self.map_size_y, self.map_size_y_active = self.slider(
-            pos, self.map_size_y, self.min_map_size, self.max_map_size, self.map_size_y_active
-        )
+        self.map_size_y = self.slider(pos, self.map_size_y, self.min_map_size, self.max_map_size)
         pos.x -= text_width
         pos.y += 2
 
