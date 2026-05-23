@@ -248,7 +248,7 @@ class GameMenu(Window):
     def move_turtle(self):
         pos = self.map_to_turtle(self.player.pos)
         turtle.goto(pos.x, pos.y)
-        turtle.settiltangle(90 - self.player.angle)
+        turtle.tiltangle(90 - self.player.angle)
         self.screen.update()
 
     def update(self):
