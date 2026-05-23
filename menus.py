@@ -318,154 +318,60 @@ def draw_info(window: Window, rec: Rec):
     def clamp_text(text: str):
         return text[: rec.width - 2]
 
-    window.label(
-        rec.get_pos(),
-        clamp_text("Player: " + settings_menu.player_name),
-        Colors.INVERTED,
-        align=Align.Center,
-        parent_width=rec.width,
-    )
-    rec.y += 1
+    def draw_text(text: str):
+        window.label(
+            rec.get_pos(),
+            clamp_text(text),
+            Colors.INVERTED,
+            align=Align.Center,
+            parent_width=rec.width,
+        )
+        rec.y += 1
 
-    window.label(
-        rec.get_pos(),
-        clamp_text(
-            "Map size: " + str(settings_menu.map_size_x) + " " + str(settings_menu.map_size_y)
-        ),
-        Colors.INVERTED,
-        align=Align.Center,
-        parent_width=rec.width,
+    start_pos_text = (
+        str(int(game_menu.map.player_pos.x)) + " " + str(int(game_menu.map.player_pos.y))
     )
-    rec.y += 1
+    end_pos_text = str(int(game_menu.player.pos.x)) + " " + str(int(game_menu.player.pos.y))
 
-    window.label(
-        rec.get_pos(),
-        clamp_text(
-            "Start pos: "
-            + str(int(game_menu.map.player_pos.x))
-            + " "
-            + str(int(game_menu.map.player_pos.y))
-        ),
-        Colors.INVERTED,
-        align=Align.Center,
-        parent_width=rec.width,
-    )
-    rec.y += 1
-
-    window.label(
-        rec.get_pos(),
-        clamp_text(
-            "End pos: " + str(int(game_menu.player.pos.x)) + " " + str(int(game_menu.player.pos.y))
-        ),
-        Colors.INVERTED,
-        align=Align.Center,
-        parent_width=rec.width,
-    )
-    rec.y += 1
-
-    window.label(
-        rec.get_pos(),
-        clamp_text("Time: " + str(round(game_menu.time, 1)) + "s"),
-        Colors.INVERTED,
-        align=Align.Center,
-        parent_width=rec.width,
-    )
-    rec.y += 1
-
-    window.label(
-        rec.get_pos(),
-        clamp_text("Frames: " + str(game_menu.frame)),
-        Colors.INVERTED,
-        align=Align.Center,
-        parent_width=rec.width,
-    )
-    rec.y += 1
-
-    window.label(
-        rec.get_pos(),
-        clamp_text("End speed: " + str(round(game_menu.player.speed, 1))),
-        Colors.INVERTED,
-        align=Align.Center,
-        parent_width=rec.width,
-    )
-    rec.y += 1
-
-    window.label(
-        rec.get_pos(),
-        clamp_text("Fuel: " + str(round(game_menu.player.fuel, 1))),
-        Colors.INVERTED,
-        align=Align.Center,
-        parent_width=rec.width,
-    )
-    rec.y += 1
-
-    window.label(
-        rec.get_pos(),
-        clamp_text("Points: " + str(game_menu.points)),
-        Colors.INVERTED,
-        align=Align.Center,
-        parent_width=rec.width,
-    )
-    rec.y += 1
-
-    window.label(
-        rec.get_pos(),
-        clamp_text("Fields: " + str(game_menu.fields) + "/" + str(len(game_menu.map.fields))),
-        Colors.INVERTED,
-        align=Align.Center,
-        parent_width=rec.width,
-    )
-    rec.y += 1
-
-    window.label(
-        rec.get_pos(),
-        clamp_text("Difficulty: " + settings_menu.difficulties[settings_menu.difficulty]),
-        Colors.INVERTED,
-        align=Align.Center,
-        parent_width=rec.width,
-    )
-    rec.y += 1
+    draw_text("Player: " + settings_menu.player_name)
+    draw_text("Map size: " + str(settings_menu.map_size_x) + " " + str(settings_menu.map_size_y))
+    draw_text("Start pos: " + start_pos_text)
+    draw_text("End pos: " + end_pos_text)
+    draw_text("Time: " + str(round(game_menu.time, 1)) + "s")
+    draw_text("Frames: " + str(game_menu.frame))
+    draw_text("End speed: " + str(round(game_menu.player.speed, 1)))
+    draw_text("Fuel: " + str(round(game_menu.player.fuel, 1)))
+    draw_text("Points: " + str(game_menu.points))
+    draw_text("Fields: " + str(game_menu.fields) + "/" + str(len(game_menu.map.fields)))
+    draw_text("Difficulty: " + settings_menu.difficulties[settings_menu.difficulty])
 
 
 def draw_buttons(window: Window, rec: Rec, show_restart: bool = True):
-    if show_restart:
-        if window.button(
+    def draw_button(text: str) -> bool:
+        clicked = window.button(
             rec.get_pos(),
-            "Restart",
+            text,
             idle_color=Colors.INVERTED,
             selected_color=Colors.RESET,
             align=Align.Center,
             parent_width=rec.width,
-        ):
-            game_menu.restart_game()
-            window.set_visible(False)
+        )
         rec.y += 1
+        return clicked
 
-    if window.button(
-        rec.get_pos(),
-        "New game",
-        idle_color=Colors.INVERTED,
-        selected_color=Colors.RESET,
-        align=Align.Center,
-        parent_width=rec.width,
-    ):
+    if show_restart and draw_button("Restart"):
+        game_menu.restart_game()
+        window.set_visible(False)
+
+    if draw_button("New game"):
         game_menu.map.set_random_seed()
         game_menu.restart_game()
         window.set_visible(False)
-    rec.y += 1
 
-    if window.button(
-        rec.get_pos(),
-        "Return to main menu",
-        idle_color=Colors.INVERTED,
-        selected_color=Colors.RESET,
-        align=Align.Center,
-        parent_width=rec.width,
-    ):
+    if draw_button("Return to main menu"):
         game_menu.set_visible(False)
         main_menu.set_visible(True)
         window.set_visible(False)
-    rec.y += 1
 
 
 class PauseMenu(Window):
