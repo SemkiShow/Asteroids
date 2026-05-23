@@ -237,6 +237,35 @@ class Window:
 
         return val
 
+    def checkbox(
+        self,
+        pos: Vec2,
+        val: bool,
+        idle_color: str = Colors.RESET,
+        selected_color: str = Colors.INVERTED,
+        align: Align = Align.Left,
+        parent_width: float = 0,
+    ) -> bool:
+        idx = self._total_widgets
+        self._total_widgets += 1
+
+        text = "[" + ("X" if val else " ") + "]"
+        new_pos = Vec2(pos.x, pos.y)
+        apply_align(new_pos, len(text), align, parent_width)
+
+        selected = self.is_selected(idx)
+
+        color = idle_color
+        if selected:
+            color = selected_color
+        camera.draw_text(new_pos, text, color, world_pos=False)
+
+        if selected:
+            if is_key_pressed(Key.Enter):
+                val = not val
+
+        return val
+
     def update(self):
         pass
 

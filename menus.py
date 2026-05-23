@@ -62,6 +62,7 @@ class SettingsMenu(Window):
         self.start_x: int = 100
         self.start_y: int = 100
         self.start_angle: int = 0
+        self.compatibility_mode: bool = False
 
         self._settings_keys = [k for k in self.__dict__.keys() if k not in parent_vars]
 
@@ -143,6 +144,18 @@ class SettingsMenu(Window):
         self.label(pos, "Start angle")
         pos.x += text_width
         self.start_angle = self.slider(pos, self.start_angle, 0, 360, step_size=45)
+        pos.x -= text_width
+        pos.y += 2
+
+        self.label(pos, "Compatibility mode")
+        pos.x += text_width
+        compatibility_mode = self.checkbox(pos, self.compatibility_mode)
+        if compatibility_mode != self.compatibility_mode:
+            if compatibility_mode:
+                game_menu.player.directions = "^/>\\v/<\\"
+            else:
+                game_menu.player.directions = "↑↗→↘↓↙←↖"
+        self.compatibility_mode = compatibility_mode
         pos.x -= text_width
         pos.y += 2
 

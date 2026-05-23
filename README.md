@@ -71,10 +71,21 @@ Start X (preferred) ----------+--------- 100
 Start Y (preferred) ----------+--------- 100         
                                                      
 Start angle         +------------------- 0           
+                                                     
+Compatibility mode  [ ]                              
 ```
 
-W danym menu można zmienić nazwę gracza, poziom trudności gry (Easy, Medium lub Hard), wymiary mapy (50-500), początkową ilość paliwa (500-2000), preferowaną początkową pozycję (może być zastosowana inna przy generacji świata jeśli wprowadzona wartość doprowadziła by do kolizji po starcie gry) oraz początkowy kąt (0-359).  
 Wciśnięcie przycisku `Back` powoduje powrót do menu głównego.
+
+W danym menu mozna zmienić:
+
+- Nazwę gracza
+- Poziom trudności gry (Easy, Medium lub Hard)
+- Wymiary mapy (50-500)
+- Początkową ilość paliwa (500-2000)
+- Preferowaną początkową pozycję (może być zastosowana inna przy generacji świata jeśli wprowadzona wartość doprowadziła by do kolizji po starcie gry)
+- Początkowy kąt (0-359)
+- Tryb zgodności (zamienia znaki Unicode na ASCII)
 
 Ustawienia są zapisywne do pliku `settings.json`.
 
