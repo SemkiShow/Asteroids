@@ -355,9 +355,6 @@ class GameMenu(Window):
         self.label(Vec2(0, 4), "Points: " + str(self.points), Colors.YELLOW)
         self.label(Vec2(0, 5), "Time: " + str(round(self.time, 1)) + "s", Colors.YELLOW)
         self.label(Vec2(0, 6), "Frame: " + str(self.frame), Colors.YELLOW)
-        self.label(
-            Vec2(0, 7), "FPS: " + str(round(self.frame / max(0.1, self.time), 1)), Colors.YELLOW
-        )
 
         return super().draw()
 
