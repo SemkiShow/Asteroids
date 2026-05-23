@@ -182,6 +182,7 @@ class Window:
         val: int,
         min_val: int,
         max_val: int,
+        step_size: int = -1,
         width: int = 20,
         show_value: bool = True,
         idle_color: str = Colors.RESET,
@@ -222,11 +223,12 @@ class Window:
                 self.toggle_active(idx)
 
             if active:
-                delta = math.ceil((max_val - min_val) / width)
+                if step_size <= 0:
+                    step_size = math.ceil((max_val - min_val) / width)
                 if is_key_pressed(Key.Left):
-                    val -= delta
+                    val -= step_size
                 if is_key_pressed(Key.Right):
-                    val += delta
+                    val += step_size
 
         if val < min_val:
             val = min_val

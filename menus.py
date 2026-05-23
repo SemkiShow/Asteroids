@@ -61,6 +61,7 @@ class SettingsMenu(Window):
         self.start_fuel: int = 1000
         self.start_x: int = 100
         self.start_y: int = 100
+        self.start_angle: int = 0
 
         self._settings_keys = [k for k in self.__dict__.keys() if k not in parent_vars]
 
@@ -139,6 +140,12 @@ class SettingsMenu(Window):
         pos.x -= text_width
         pos.y += 2
 
+        self.label(pos, "Start angle")
+        pos.x += text_width
+        self.start_angle = self.slider(pos, self.start_angle, 0, 360, step_size=45)
+        pos.x -= text_width
+        pos.y += 2
+
         return super().draw()
 
 
@@ -186,7 +193,7 @@ class GameMenu(Window):
             min_distance=min(settings_menu.map_size_x, settings_menu.map_size_y) / 2,
         )
 
-        self.player.restart_game(settings_menu.start_fuel)
+        self.player.restart_game(settings_menu.start_angle, settings_menu.start_fuel)
         self.player.pos = Vec2(self.map.player_pos.x, self.map.player_pos.y)
         self.points: int = 0
         self.time: float = 0

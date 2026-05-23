@@ -18,10 +18,10 @@ class Player:
         self.pos.x += x
         self.pos.y += y
 
-    def restart_game(self, fuel: float):
+    def restart_game(self, angle: float, fuel: float):
         self.pos = Vec2(0, 0)
         self.speed = 0
-        self.angle = 0
+        self.angle = angle
         self.fuel: float = fuel
 
     def update(self):

@@ -66,12 +66,14 @@ Map size Y          -------+------------ 200
                                                      
 Start fuel          -------+------------ 1000        
                                                      
-Start X (preferred) ----------+--------- 101         
+Start X (preferred) ----------+--------- 100         
                                                      
 Start Y (preferred) ----------+--------- 100         
+                                                     
+Start angle         +------------------- 0           
 ```
 
-W danym menu można zmienić nazwę gracza, poziom trudności gry (Easy, Medium lub Hard), wymiary mapy (50-500), początkową ilość paliwa (500-2000) oraz preferowaną początkową pozycję (może być zastosowana inna przy generacji świata jeśli wprowadzona wartość doprowadziła by do kolizji po starcie gry).  
+W danym menu można zmienić nazwę gracza, poziom trudności gry (Easy, Medium lub Hard), wymiary mapy (50-500), początkową ilość paliwa (500-2000), preferowaną początkową pozycję (może być zastosowana inna przy generacji świata jeśli wprowadzona wartość doprowadziła by do kolizji po starcie gry) oraz początkowy kąt (0-359).  
 Wciśnięcie przycisku `Back` powoduje powrót do menu głównego.
 
 Ustawienia są zapisywne do pliku `settings.json`.
