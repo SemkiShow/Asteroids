@@ -351,9 +351,13 @@ def draw_info(window: Window, rec: Rec):
         rec.y += 1
 
     start_pos_text = (
-        str(int(game_menu.map.player_pos.x)) + " " + str(int(game_menu.map.player_pos.y))
+        str(int(game_menu.map.player_pos.x))
+        + " "
+        + str(int(game_menu.map.player_pos.y / camera.ratio))
     )
-    end_pos_text = str(int(game_menu.player.pos.x)) + " " + str(int(game_menu.player.pos.y))
+    end_pos_text = (
+        str(int(game_menu.player.pos.x)) + " " + str(int(game_menu.player.pos.y / camera.ratio))
+    )
 
     draw_label("Player: " + settings_menu.player_name)
     draw_label("Map size: " + str(settings_menu.map_size_x) + " " + str(settings_menu.map_size_y))
