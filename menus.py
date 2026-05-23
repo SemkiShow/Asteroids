@@ -81,7 +81,7 @@ class SettingsMenu(Window):
     def save(self):
         with open(self.settings_path, "w") as file:
             data = {k: self.__dict__[k] for k in self._settings_keys}
-            json.dump(data, file)
+            json.dump(data, file, indent=4)
 
     def draw(self):
         pos: Vec2 = Vec2(0, 0)
@@ -203,15 +203,6 @@ class GameMenu(Window):
         turtle.settiltangle(90 - self.player.angle)
         turtle.update()
 
-    def game_over(self):
-        self.player.speed = 0
-        game_over_menu.set_visible(True)
-
-    def victory(self):
-        self.player.speed = 0
-        notification_menu.show("You won!")
-        victory_menu.set_visible(True)
-
     def update(self):
         super().update()
 
@@ -243,7 +234,7 @@ class GameMenu(Window):
             or player_pos.y >= self.map.size.y
         ):
             notification_menu.show("You went out of bounds!")
-            self.game_over()
+            game_over_menu.set_visible(True)
             return
 
         # Asteroid collision game over
@@ -252,13 +243,13 @@ class GameMenu(Window):
             asteroid_pos = camera.get_draw_pos(asteroid.pos)
             if asteroid_pos == player_pos:
                 notification_menu.show("You hit an asteroid!")
-                self.game_over()
+                game_over_menu.set_visible(True)
                 return
 
         # Fuel game over
         if self.player.fuel <= 0:
             notification_menu.show("You ran out of fuel!")
-            self.game_over()
+            game_over_menu.set_visible(True)
             return
 
         # Field collision handling
@@ -294,7 +285,8 @@ class GameMenu(Window):
 
         # Target collision victory
         if player_pos == camera.get_draw_pos(self.map.end_pos):
-            self.victory()
+            notification_menu.show("You won!")
+            victory_menu.set_visible(True)
             return
 
     def draw(self):
@@ -315,13 +307,10 @@ class GameMenu(Window):
 
 
 def draw_info(window: Window, rec: Rec):
-    def clamp_text(text: str):
-        return text[: rec.width - 2]
-
     def draw_label(text: str):
         window.label(
             rec.get_pos(),
-            clamp_text(text),
+            text[: rec.width - 2],
             Colors.INVERTED,
             align=Align.Center,
             parent_width=rec.width,
@@ -459,7 +448,7 @@ class VictoryMenu(Window):
         draw_info(self, rec)
         rec.y += 1
 
-        draw_buttons(self, rec, False)
+        draw_buttons(self, rec, show_restart=False)
         rec.y += 1
 
         return super().draw()

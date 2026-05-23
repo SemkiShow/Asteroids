@@ -7,8 +7,8 @@ from enum import Enum, auto
 if os.name != "nt":
     import tty, termios
 
-    fd = sys.stdin.fileno()
-    old_settings = termios.tcgetattr(fd)
+    stdin = sys.stdin.fileno()
+    old_settings = termios.tcgetattr(stdin)
 
 
 def prepare_terminal():
@@ -16,12 +16,12 @@ def prepare_terminal():
     if os.name == "nt":
         os.system("")
     else:
-        tty.setcbreak(fd)
+        tty.setcbreak(stdin)
 
 
 def restore_terminal():
     if os.name != "nt":
-        termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
+        termios.tcsetattr(stdin, termios.TCSADRAIN, old_settings)
     camera.show_cursor()
 
 
@@ -36,8 +36,8 @@ def get_char():
     else:
         import select
 
-        if select.select([fd], [], [], 0)[0]:
-            return os.read(fd, 1).decode("utf-8", errors="ignore")
+        if select.select([stdin], [], [], 0)[0]:
+            return os.read(stdin, 1).decode("utf-8", errors="ignore")
         return None
 
 

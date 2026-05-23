@@ -48,8 +48,8 @@ Aby zmienić wybrany element w liście rozwijanej lub zmienić wartość suwaka 
 ```
 
 Wciśnięcie przycisku `Play` powoduje uruchomienie [gry](#menu-gry).  
-`Settings` otwiera [menu ustawień](#menu-ustawień)
-`Exit` zamyka program
+`Settings` otwiera [menu ustawień](#menu-ustawień).  
+`Exit` zamyka program.  
 
 ### Menu ustawień
 
