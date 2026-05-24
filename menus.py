@@ -218,7 +218,7 @@ class GameMenu(Window):
         # Set up the screen
         self.screen = turtle.Screen()
         self.screen.setup(self.map.size.x * 1.25, self.map.size.y / camera.ratio * 1.25)
-        self.screen.tracer(0, math.ceil(1 / self.turtle_tick_time))
+        self.screen.tracer(0)
         turtle.title("Minimap")
         turtle.clearscreen()
 
@@ -238,10 +238,33 @@ class GameMenu(Window):
         turtle.color("black")
         turtle.width(1)
 
+        # Draw border
+        turtle.penup()
+        turtle.color("red")
+        turtle.width(3)
+        pos = self.map_to_turtle(Vec2(0, 0))
+        turtle.goto(pos.x, pos.y)
+        turtle.pendown()
+        pos = self.map_to_turtle(Vec2(self.map.size.x, 0))
+        turtle.goto(pos.x, pos.y)
+        pos = self.map_to_turtle(Vec2(self.map.size.x, self.map.size.y))
+        turtle.goto(pos.x, pos.y)
+        pos = self.map_to_turtle(Vec2(0, self.map.size.y))
+        turtle.goto(pos.x, pos.y)
+        pos = self.map_to_turtle(Vec2(0, 0))
+        turtle.goto(pos.x, pos.y)
+        turtle.color("black")
+        turtle.width(1)
+
         # Move to the player position
         turtle.penup()
         self.move_turtle()
         turtle.pendown()
+        turtle.color("blue")
+        turtle.width(10)
+        self.move_turtle()
+        turtle.color("black")
+        turtle.width(1)
 
         self.screen.update()
 
