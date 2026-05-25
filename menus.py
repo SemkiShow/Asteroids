@@ -203,7 +203,7 @@ class GameMenu(Window):
             height=settings_menu.map_size_y,
             asteroids_fill=asteroids_fill,
             fields_fill=fields_fill,
-            min_distance=min(settings_menu.map_size_x, settings_menu.map_size_y) / 2,
+            min_distance=min(settings_menu.map_size_x, settings_menu.map_size_y) / 3,
         )
 
         self.player.restart_game(settings_menu.start_angle, settings_menu.start_fuel)
@@ -221,22 +221,6 @@ class GameMenu(Window):
         self.screen.tracer(0)
         turtle.title("Minimap")
         turtle.clearscreen()
-
-        # Draw goal
-        turtle_end_pos = self.map_to_turtle(self.map.end_pos)
-        end_pos_size = 10
-        turtle.color("green")
-        turtle.width(3)
-        turtle.penup()
-        turtle.goto(turtle_end_pos.x - end_pos_size / 2, turtle_end_pos.y + end_pos_size / 2)
-        turtle.pendown()
-        turtle.goto(turtle_end_pos.x + end_pos_size / 2, turtle_end_pos.y - end_pos_size / 2)
-        turtle.penup()
-        turtle.goto(turtle_end_pos.x + end_pos_size / 2, turtle_end_pos.y + end_pos_size / 2)
-        turtle.pendown()
-        turtle.goto(turtle_end_pos.x - end_pos_size / 2, turtle_end_pos.y - end_pos_size / 2)
-        turtle.color("black")
-        turtle.width(1)
 
         # Draw border
         turtle.penup()
@@ -256,7 +240,23 @@ class GameMenu(Window):
         turtle.color("black")
         turtle.width(1)
 
-        # Move to the player position
+        # Draw goal
+        turtle_end_pos = self.map_to_turtle(self.map.end_pos)
+        end_pos_size = 10
+        turtle.color("green")
+        turtle.width(3)
+        turtle.penup()
+        turtle.goto(turtle_end_pos.x - end_pos_size / 2, turtle_end_pos.y + end_pos_size / 2)
+        turtle.pendown()
+        turtle.goto(turtle_end_pos.x + end_pos_size / 2, turtle_end_pos.y - end_pos_size / 2)
+        turtle.penup()
+        turtle.goto(turtle_end_pos.x + end_pos_size / 2, turtle_end_pos.y + end_pos_size / 2)
+        turtle.pendown()
+        turtle.goto(turtle_end_pos.x - end_pos_size / 2, turtle_end_pos.y - end_pos_size / 2)
+        turtle.color("black")
+        turtle.width(1)
+
+        # Draw start position
         turtle.penup()
         self.move_turtle()
         turtle.pendown()

@@ -36,8 +36,6 @@ if __name__ == "__main__":
 
                 reset_events()
                 timer = time.time()
-
-            time.sleep(0.01)
     except ExitSuccess:
         # Clear the terminal on successful exit
         print("\x1b[0m\x1b[J", end="")
